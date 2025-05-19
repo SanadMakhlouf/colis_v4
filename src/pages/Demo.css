@@ -1,0 +1,192 @@
+/* Demo page styles */
+.demo-page {
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+  color: #0a1921;
+}
+
+/* Reuse header styles from Landing.css */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 5%;
+  background-color: #fff;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.logo-text {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #ff7a30;
+}
+
+.main-nav ul {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+.main-nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.main-nav a:hover {
+  color: #ff7a30;
+}
+
+.language-selector {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.language-selector span {
+  margin-left: 5px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #ff7a30;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #e66a20;
+}
+
+.btn-secondary {
+  background-color: #eaeaea;
+  color: #333;
+}
+
+.btn-secondary:hover {
+  background-color: #d9d9d9;
+}
+
+.btn-large {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  border-radius: 50px;
+}
+
+/* Demo content styles */
+.demo-content {
+  padding: 3rem 5%;
+}
+
+.demo-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.demo-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #0a1921;
+}
+
+.demo-container p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  color: #555;
+}
+
+.demo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #ff7a30;
+  box-shadow: 0 0 0 2px rgba(255, 122, 48, 0.2);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .header {
+    flex-wrap: wrap;
+    padding: 1rem;
+  }
+  
+  .main-nav {
+    order: 3;
+    width: 100%;
+    margin-top: 1rem;
+  }
+  
+  .main-nav ul {
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  
+  .demo-container {
+    padding: 2rem 1.5rem;
+  }
+  
+  .demo-container h1 {
+    font-size: 2rem;
+  }
+} 

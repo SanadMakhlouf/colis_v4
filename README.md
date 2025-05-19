@@ -1,70 +1,118 @@
-# Getting Started with Create React App
+# Colis - Application de Gestion de Colis
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Une application de gestion de colis avec authentification multi-rôles utilisant React et Supabase.
 
-## Available Scripts
+## Fonctionnalités
 
-In the project directory, you can run:
+- Authentification avec Supabase
+- Système de gestion des rôles (administrateurs et clients)
+- Interface utilisateur moderne et responsive
+- Tableau de bord pour les clients
+- Tableau de bord administrateur pour la gestion des utilisateurs
+- Interface en français
 
-### `npm start`
+## Configuration Technique
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Prérequis
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Node.js (v14 ou supérieur)
+- Compte Supabase (gratuit)
 
-### `npm test`
+### Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Clonez le dépôt:
+   ```
+   git clone <url-du-repo>
+   cd colis-app
+   ```
 
-### `npm run build`
+2. Installez les dépendances:
+   ```
+   npm install
+   ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. Configurez Supabase:
+   - Créez un compte sur [Supabase](https://supabase.com)
+   - Créez un nouveau projet
+   - Notez l'URL de votre projet et la clé anon
+   - Dans le fichier `src/supabase.js`, remplacez les valeurs par défaut:
+     ```javascript
+     const supabaseUrl = 'VOTRE_URL_SUPABASE';
+     const supabaseAnonKey = 'VOTRE_CLE_ANON_SUPABASE';
+     ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. Configuration de la base de données Supabase:
+   - Allez dans l'éditeur SQL de votre projet Supabase
+   - Copiez et exécutez le contenu du fichier `supabase_setup.sql`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+5. Démarrez l'application:
+   ```
+   npm start
+   ```
 
-### `npm run eject`
+### Configuration des rôles
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Pour créer un administrateur:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. Inscrivez-vous normalement via l'application
+2. Accédez à l'éditeur SQL de Supabase et exécutez:
+   ```sql
+   UPDATE profiles SET role = 'admin' WHERE email = 'votre_email@exemple.com';
+   ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Structure du Projet
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```
+colis-app/
+├── public/
+│   ├── logo192.png
+│   └── ...
+├── src/
+│   ├── components/
+│   ├── context/
+│   │   └── AuthContext.js
+│   ├── pages/
+│   │   ├── Admin.js
+│   │   ├── Admin.css
+│   │   ├── Auth.css
+│   │   ├── Dashboard.js
+│   │   ├── Dashboard.css
+│   │   ├── Demo.js
+│   │   ├── Demo.css
+│   │   ├── Landing.js
+│   │   ├── Landing.css
+│   │   ├── Login.js
+│   │   └── Register.js
+│   ├── App.js
+│   ├── App.css
+│   ├── index.js
+│   └── supabase.js
+├── package.json
+└── README.md
+```
 
-## Learn More
+## Sécurité
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+L'application utilise les politiques de sécurité au niveau des lignes (RLS) de Supabase pour garantir que:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Les clients ne peuvent voir que leurs propres données
+- Les administrateurs peuvent voir et gérer toutes les données
+- Les utilisateurs non authentifiés n'ont accès à aucune donnée sensible
 
-### Code Splitting
+## Personnalisation
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Vous pouvez personnaliser l'application en modifiant:
 
-### Analyzing the Bundle Size
+- Les couleurs et styles dans les fichiers CSS
+- Les textes et libellés dans les composants React
+- La structure de la base de données via l'éditeur SQL de Supabase
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Déploiement
 
-### Making a Progressive Web App
+Pour déployer l'application en production:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```
+npm run build
+```
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Puis déployez le contenu du dossier `build` sur votre hébergement préféré (Netlify, Vercel, etc.).
