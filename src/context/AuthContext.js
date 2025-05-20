@@ -2,6 +2,8 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { supabase } from '../supabase';
 import { useNavigate } from 'react-router-dom';
 
+// apres le sroles
+
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
