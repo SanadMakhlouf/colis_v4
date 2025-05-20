@@ -30,12 +30,15 @@ const AdminDashboard = () => {
     try {
       setDataLoading(true);
 
-      // Récupérer les statistiques
+      // Récupération simple de tous les colis
       const { data: shipmentsData, error: shipmentsError } = await supabase
         .from('shipments')
-        .select('*');
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (shipmentsError) throw shipmentsError;
+
+      setShipments(shipmentsData || []);
 
       // Calculer les statistiques
       const totalShipments = shipmentsData.length;
@@ -43,7 +46,6 @@ const AdminDashboard = () => {
       const totalIncidents = shipmentsData.filter(s => s.status === 'incident').length;
 
       setStats({ totalShipments, totalRevenue, totalIncidents });
-      setShipments(shipmentsData);
 
       // Données mockées pour les utilisateurs
       const mockUsers = [
@@ -63,6 +65,10 @@ const AdminDashboard = () => {
 
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error);
+      setMessage({
+        type: 'error',
+        text: 'Erreur lors du chargement des données. Veuillez rafraîchir la page.'
+      });
     } finally {
       setDataLoading(false);
     }
@@ -79,54 +85,46 @@ const AdminDashboard = () => {
     }
 
     try {
-      // Rechercher le colis
-      const { data: shipmentData, error: shipmentError } = await supabase
+      console.log('Recherche du colis avec le numéro:', trackingNumber.trim());
+
+      // Recherche simple dans la table shipments
+      const { data: shipment, error } = await supabase
         .from('shipments')
         .select('*')
         .eq('tracking_number', trackingNumber.trim())
         .single();
 
-      if (shipmentError) {
-        console.error('Erreur de recherche:', shipmentError);
-        if (shipmentError.code === 'PGRST116') {
-          throw new Error('Aucun colis trouvé avec ce numéro de suivi.');
-        }
-        throw new Error(`Erreur lors de la recherche: ${shipmentError.message}`);
-      }
-
-      if (!shipmentData) {
-        setMessage({ type: 'error', text: 'Aucun colis trouvé avec ce numéro de suivi.' });
+      if (error) {
+        console.error('Erreur lors de la recherche:', error);
+        setMessage({ 
+          type: 'error', 
+          text: 'Aucun colis trouvé avec ce numéro de suivi.' 
+        });
         return;
       }
 
-      // Récupérer les informations de l'utilisateur
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('email')
-        .eq('id', shipmentData.user_id)
-        .single();
-
-      if (userError) {
-        console.error('Erreur lors de la récupération des données utilisateur:', userError);
+      if (!shipment) {
+        setMessage({ 
+          type: 'error', 
+          text: 'Aucun colis trouvé avec ce numéro de suivi.' 
+        });
+        return;
       }
 
-      // Combiner les données
-      const completeData = {
-        ...shipmentData,
-        user: userData || { email: 'Non disponible' }
-      };
-
-      setSelectedShipment(completeData);
+      console.log('Colis trouvé:', shipment);
+      
+      setSelectedShipment(shipment);
       setMessage({ 
         type: 'success', 
-        text: `Colis #${completeData.tracking_number} trouvé avec succès.` 
+        text: `Colis #${shipment.tracking_number} trouvé avec succès.` 
       });
+      setTrackingNumber('');
 
     } catch (error) {
-      console.error('Erreur complète:', error);
+      console.error('Erreur détaillée:', error);
       setMessage({ 
         type: 'error', 
-        text: error.message || 'Une erreur est survenue lors de la recherche du colis.' 
+        text: `Erreur: ${error.message || 'Une erreur est survenue lors de la recherche du colis.'}` 
       });
     }
   };
@@ -298,7 +296,9 @@ const AdminDashboard = () => {
                   <p><strong>Statut actuel:</strong> {getStatusText(selectedShipment.status)}</p>
                   <p><strong>De:</strong> {selectedShipment.origin}</p>
                   <p><strong>Vers:</strong> {selectedShipment.destination}</p>
-                  <p><strong>Client:</strong> {selectedShipment.user?.email || 'Non disponible'}</p>
+                  <p><strong>Client:</strong> {selectedShipment.user_email}</p>
+                  <p><strong>Nom du client:</strong> {selectedShipment.user_name}</p>
+                  <p><strong>Rôle du client:</strong> {selectedShipment.user_role}</p>
                   <p><strong>Date de création:</strong> {formatDate(selectedShipment.created_at)}</p>
                   <p><strong>Dernière mise à jour:</strong> {formatDate(selectedShipment.updated_at)}</p>
                 </div>
@@ -368,6 +368,7 @@ const AdminDashboard = () => {
                 <thead>
                   <tr>
                     <th>Numéro</th>
+                    <th>Client</th>
                     <th>Statut</th>
                     <th>Origine</th>
                     <th>Destination</th>
@@ -378,10 +379,11 @@ const AdminDashboard = () => {
                   {shipments.slice(0, 5).map(shipment => (
                     <tr key={shipment.id}>
                       <td>{shipment.tracking_number}</td>
-                      <td>{shipment.status}</td>
+                      <td>{shipment.user_name}</td>
+                      <td>{getStatusText(shipment.status)}</td>
                       <td>{shipment.origin}</td>
                       <td>{shipment.destination}</td>
-                      <td>{new Date(shipment.created_at).toLocaleDateString()}</td>
+                      <td>{formatDate(shipment.created_at)}</td>
                     </tr>
                   ))}
                 </tbody>

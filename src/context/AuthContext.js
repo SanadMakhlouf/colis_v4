@@ -7,6 +7,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -16,9 +17,20 @@ export const AuthProvider = ({ children }) => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         setUser(session?.user ?? null);
+        
+        // Extraire le rôle des métadonnées utilisateur
+        if (session?.user) {
+          console.log("Métadonnées utilisateur:", session.user.user_metadata);
+          const role = session.user.user_metadata?.role || 'client';
+          console.log("Rôle détecté:", role);
+          setUserRole(role);
+        } else {
+          setUserRole(null);
+        }
       } catch (error) {
         console.error('Erreur lors de la vérification de la session:', error);
         setUser(null);
+        setUserRole(null);
       } finally {
         setLoading(false);
       }
@@ -29,6 +41,14 @@ export const AuthProvider = ({ children }) => {
     // Écouter les changements d'état d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      
+      // Mettre à jour le rôle lors du changement de session
+      if (session?.user) {
+        const role = session.user.user_metadata?.role || 'client';
+        setUserRole(role);
+      } else {
+        setUserRole(null);
+      }
     });
 
     return () => {
@@ -42,7 +62,10 @@ export const AuthProvider = ({ children }) => {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: {
+            role: 'client' // Par défaut, tout nouvel utilisateur est un client
+          }
         }
       });
 
@@ -78,6 +101,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    userRole,
     loading,
     signUp,
     signIn,

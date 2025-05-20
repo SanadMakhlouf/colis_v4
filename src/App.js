@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 
 // Pages
@@ -11,10 +11,12 @@ import Reservation from './pages/Reservation';
 import Demo from './pages/Demo';
 import Tracking from './pages/Tracking';
 import Profile from './pages/Profile';
+import Admin from './pages/Admin';
 import AdminDashboard from './pages/AdminDashboard';
+import MyShipments from './pages/MyShipments';
 
 // Auth Context
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 
@@ -28,20 +30,106 @@ const LoadingScreen = () => (
   </div>
 );
 
+// Route du dashboard qui redirige selon le rôle
+const DashboardRoute = () => {
+  const { user, userRole, loading } = useAuth();
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Rediriger selon le rôle
+  switch (userRole) {
+    case 'admin':
+      return <Navigate to="/admin" replace />;
+    case 'livreur':
+      return <Navigate to="/admindashboard" replace />;
+    default: // client
+      return <Dashboard />;
+  }
+};
+
 function App() {
   return (
     <Router>
       <AuthProvider>
         <Routes>
+          {/* Routes publiques */}
           <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/reservation" element={<ProtectedRoute><Reservation /></ProtectedRoute>} />
-          <Route path="/tracking" element={<ProtectedRoute><Tracking /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
           <Route path="/demo" element={<Demo />} />
+          
+          {/* Route dashboard qui redirige selon le rôle */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardRoute />
+              </ProtectedRoute>
+            }
+          />
+          
+          {/* Routes protégées pour les clients uniquement */}
+          <Route
+            path="/myshipments"
+            element={
+              <ProtectedRoute requiredRole="client">
+                <MyShipments />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route
+            path="/reservation"
+            element={
+              <ProtectedRoute requiredRole="client">
+                <Reservation />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route 
+            path="/tracking" 
+            element={
+              <ProtectedRoute>
+                <Tracking />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Routes protégées pour les admin uniquement */}
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <Admin />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Route protégée pour les livreurs */}
+          <Route 
+            path="/admindashboard" 
+            element={
+              <ProtectedRoute requiredRole="livreur">
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
       </AuthProvider>
     </Router>

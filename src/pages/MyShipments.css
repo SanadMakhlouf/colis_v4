@@ -1,0 +1,282 @@
+.myshipments-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.myshipments-content {
+  flex: 1;
+  padding: 2rem;
+  margin-left: 250px; /* Largeur de la sidebar */
+  width: calc(100% - 250px);
+  max-width: 1600px;
+}
+
+.myshipments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.myshipments-header h1 {
+  margin: 0;
+  color: #333;
+  font-size: 2rem;
+}
+
+.search-filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  flex: 1;
+  max-width: 600px;
+}
+
+.search-input {
+  flex: 2;
+  min-width: 200px;
+  padding: 0.75rem 1rem;
+  border: 2px solid #eee;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #ff7a30;
+}
+
+.status-filter {
+  flex: 1;
+  min-width: 150px;
+  padding: 0.75rem;
+  border: 2px solid #eee;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: white;
+  cursor: pointer;
+}
+
+.status-filter:focus {
+  outline: none;
+  border-color: #ff7a30;
+}
+
+.shipments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.shipment-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.shipment-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.shipment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.shipment-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status-processing {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.status-in-transit {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.status-delivered {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-cancelled {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.shipment-details p {
+  margin: 0.5rem 0;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #ff7a30;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.no-shipments {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal Styles */
+.modal-content {
+  max-width: 600px;
+  width: 100%;
+}
+
+.detail-item {
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.detail-value {
+  color: #333;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .shipments-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .myshipments-content {
+    padding: 1.5rem;
+  }
+
+  .shipments-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .myshipments-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .myshipments-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .myshipments-header h1 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .search-filters {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .search-input,
+  .status-filter {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .shipments-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shipment-card {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .myshipments-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .shipment-header {
+    flex-direction: column;
+  }
+
+  .status-badge {
+    align-self: flex-start;
+  }
+
+  .shipment-details p {
+    font-size: 0.9rem;
+  }
+
+  .modal-content {
+    padding: 1rem;
+  }
+}
+
+/* Ajustements pour la sidebar responsive */
+@media (max-width: 768px) {
+  .myshipments-container {
+    flex-direction: column;
+  }
+} 
