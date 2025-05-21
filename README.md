@@ -1,118 +1,139 @@
-# Colis - Application de Gestion de Colis
+# Colis - Application de Gestion de Livraison
 
-Une application de gestion de colis avec authentification multi-rôles utilisant React et Supabase.
+Une application web moderne pour la gestion de colis et de livraisons, construite avec React et Supabase.
 
-## Fonctionnalités
+## 🚀 Fonctionnalités
 
-- Authentification avec Supabase
-- Système de gestion des rôles (administrateurs et clients)
-- Interface utilisateur moderne et responsive
-- Tableau de bord pour les clients
-- Tableau de bord administrateur pour la gestion des utilisateurs
-- Interface en français
+### Pour les Clients
 
-## Configuration Technique
+- Création et suivi de colis
+- Tableau de bord personnalisé
+- Historique des livraisons
+- Notifications en temps réel
+- Suivi de l'état des colis
 
-### Prérequis
+### Pour les Livreurs
 
-- Node.js (v14 ou supérieur)
-- Compte Supabase (gratuit)
+- Tableau de bord dédié
+- Gestion des livraisons assignées
+- Mise à jour du statut des colis
+- Historique des livraisons effectuées
+- Signalement d'incidents
 
-### Installation
+### Pour les Administrateurs
 
-1. Clonez le dépôt:
-   ```
-   git clone <url-du-repo>
-   cd colis-app
-   ```
+- Gestion complète des utilisateurs
+- Affectation des colis aux livreurs
+- Supervision des livraisons
+- Statistiques et rapports
+- Gestion des rôles utilisateurs
 
-2. Installez les dépendances:
-   ```
-   npm install
-   ```
+## 🛠 Technologies Utilisées
 
-3. Configurez Supabase:
-   - Créez un compte sur [Supabase](https://supabase.com)
-   - Créez un nouveau projet
-   - Notez l'URL de votre projet et la clé anon
-   - Dans le fichier `src/supabase.js`, remplacez les valeurs par défaut:
-     ```javascript
-     const supabaseUrl = 'VOTRE_URL_SUPABASE';
-     const supabaseAnonKey = 'VOTRE_CLE_ANON_SUPABASE';
-     ```
+- **Frontend:**
 
-4. Configuration de la base de données Supabase:
-   - Allez dans l'éditeur SQL de votre projet Supabase
-   - Copiez et exécutez le contenu du fichier `supabase_setup.sql`
+  - React.js
+  - React Router v6
+  - Context API pour la gestion d'état
+  - CSS moderne avec Flexbox/Grid
 
-5. Démarrez l'application:
-   ```
-   npm start
-   ```
+- **Backend:**
+  - Supabase (Backend as a Service)
+  - Base de données PostgreSQL
+  - Authentification en temps réel
+  - Stockage de fichiers
 
-### Configuration des rôles
+## 📦 Installation
 
-Pour créer un administrateur:
+1. Clonez le dépôt :
 
-1. Inscrivez-vous normalement via l'application
-2. Accédez à l'éditeur SQL de Supabase et exécutez:
-   ```sql
-   UPDATE profiles SET role = 'admin' WHERE email = 'votre_email@exemple.com';
-   ```
-
-## Structure du Projet
-
-```
-colis-app/
-├── public/
-│   ├── logo192.png
-│   └── ...
-├── src/
-│   ├── components/
-│   ├── context/
-│   │   └── AuthContext.js
-│   ├── pages/
-│   │   ├── Admin.js
-│   │   ├── Admin.css
-│   │   ├── Auth.css
-│   │   ├── Dashboard.js
-│   │   ├── Dashboard.css
-│   │   ├── Demo.js
-│   │   ├── Demo.css
-│   │   ├── Landing.js
-│   │   ├── Landing.css
-│   │   ├── Login.js
-│   │   └── Register.js
-│   ├── App.js
-│   ├── App.css
-│   ├── index.js
-│   └── supabase.js
-├── package.json
-└── README.md
+```bash
+git clone [url-du-repo]
+cd colis-app
 ```
 
-## Sécurité
+2. Installez les dépendances :
 
-L'application utilise les politiques de sécurité au niveau des lignes (RLS) de Supabase pour garantir que:
-
-- Les clients ne peuvent voir que leurs propres données
-- Les administrateurs peuvent voir et gérer toutes les données
-- Les utilisateurs non authentifiés n'ont accès à aucune donnée sensible
-
-## Personnalisation
-
-Vous pouvez personnaliser l'application en modifiant:
-
-- Les couleurs et styles dans les fichiers CSS
-- Les textes et libellés dans les composants React
-- La structure de la base de données via l'éditeur SQL de Supabase
-
-## Déploiement
-
-Pour déployer l'application en production:
-
+```bash
+npm install
 ```
+
+3. Configurez les variables d'environnement :
+
+- Créez un fichier `.env` à la racine du projet
+- Ajoutez vos clés Supabase :
+
+```env
+REACT_APP_SUPABASE_URL=votre_url_supabase
+REACT_APP_SUPABASE_ANON_KEY=votre_cle_anon_supabase
+```
+
+4. Lancez l'application :
+
+```bash
+npm start
+```
+
+## 🔑 Configuration Supabase
+
+1. Créez un compte sur [Supabase](https://supabase.com)
+2. Créez un nouveau projet
+3. Configurez les tables nécessaires :
+   - users (gérée par Supabase Auth)
+   - shipments (colis)
+   - notifications
+   - profiles
+
+## 👥 Rôles Utilisateurs
+
+- **Client:** Utilisateur standard qui peut créer et suivre ses colis
+- **Livreur:** Peut gérer les livraisons qui lui sont assignées
+- **Admin:** A accès à toutes les fonctionnalités de gestion
+
+## 🔒 Sécurité
+
+- Authentification sécurisée via Supabase
+- Politiques RLS (Row Level Security)
+- Protection des routes par rôle
+- Validation des données
+
+## 📱 Responsive Design
+
+L'application est entièrement responsive et optimisée pour :
+
+- Ordinateurs de bureau
+- Tablettes
+- Smartphones
+
+## 🌐 Déploiement
+
+1. Construisez l'application :
+
+```bash
 npm run build
 ```
 
-Puis déployez le contenu du dossier `build` sur votre hébergement préféré (Netlify, Vercel, etc.).
+2. Déployez sur votre hébergeur préféré :
+
+- Vercel
+- Netlify
+- GitHub Pages
+- etc.
+
+## 📝 Contribution
+
+Les contributions sont les bienvenues ! N'hésitez pas à :
+
+1. Fork le projet
+2. Créer une branche pour votre fonctionnalité
+3. Commiter vos changements
+4. Pousser vers la branche
+5. Ouvrir une Pull Request
+
+## 📄 Licence
+
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+
+## 📧 Contact
+
+Pour toute question ou suggestion, n'hésitez pas à ouvrir une issue ou à nous contacter directement.
