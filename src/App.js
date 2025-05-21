@@ -1,24 +1,30 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import './App.css';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import "./App.css";
 
 // Pages
-import Landing from './pages/Landing';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Reservation from './pages/Reservation';
-import Demo from './pages/Demo';
-import Tracking from './pages/Tracking';
-import Profile from './pages/Profile';
-import Admin from './pages/Admin';
-import AdminDashboard from './pages/AdminDashboard';
-import MyShipments from './pages/MyShipments';
+import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import Reservation from "./pages/Reservation";
+import Tracking from "./pages/Tracking";
+import Profile from "./pages/Profile";
+import Admin from "./pages/Admin";
+import LivreurDashboard from "./pages/LivreurDashboard";
+import MyShipments from "./pages/MyShipments";
+import Affect from "./pages/Affect";
+// Composant Demo (temporaire pour développement)
 
 // Auth Context
-import { AuthProvider, useAuth } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import PublicRoute from './components/PublicRoute';
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 
 // Loading Component
 const LoadingScreen = () => (
@@ -44,10 +50,10 @@ const DashboardRoute = () => {
 
   // Rediriger selon le rôle
   switch (userRole) {
-    case 'admin':
+    case "admin":
       return <Navigate to="/admin" replace />;
-    case 'livreur':
-      return <Navigate to="/admindashboard" replace />;
+    case "livreur":
+      return <Navigate to="/LivreurDashboard" replace />;
     default: // client
       return <Dashboard />;
   }
@@ -55,15 +61,35 @@ const DashboardRoute = () => {
 
 function App() {
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <AuthProvider>
         <Routes>
           {/* Routes publiques */}
-          <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
-          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-          <Route path="/demo" element={<Demo />} />
-          
+          <Route
+            path="/"
+            element={
+              <PublicRoute>
+                <Landing />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            }
+          />
+
           {/* Route dashboard qui redirige selon le rôle */}
           <Route
             path="/dashboard"
@@ -73,7 +99,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          
+
           {/* Routes protégées pour les clients uniquement */}
           <Route
             path="/myshipments"
@@ -83,7 +109,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          
+
           <Route
             path="/reservation"
             element={
@@ -92,43 +118,53 @@ function App() {
               </ProtectedRoute>
             }
           />
-          
-          <Route 
-            path="/tracking" 
+
+          <Route
+            path="/tracking"
             element={
               <ProtectedRoute>
                 <Tracking />
               </ProtectedRoute>
-            } 
+            }
           />
-          
-          <Route 
-            path="/profile" 
+
+          <Route
+            path="/profile"
             element={
               <ProtectedRoute>
                 <Profile />
               </ProtectedRoute>
-            } 
+            }
           />
-          
+
           {/* Routes protégées pour les admin uniquement */}
-          <Route 
-            path="/admin" 
+          <Route
+            path="/admin"
             element={
               <ProtectedRoute requiredRole="admin">
                 <Admin />
               </ProtectedRoute>
-            } 
+            }
           />
 
           {/* Route protégée pour les livreurs */}
-          <Route 
-            path="/admindashboard" 
+          <Route
+            path="/LivreurDashboard"
             element={
               <ProtectedRoute requiredRole="livreur">
-                <AdminDashboard />
+                <LivreurDashboard />
               </ProtectedRoute>
-            } 
+            }
+          />
+
+          {/* Nouvelle route pour l'affectation des colis */}
+          <Route
+            path="/affect"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <Affect />
+              </ProtectedRoute>
+            }
           />
         </Routes>
       </AuthProvider>
