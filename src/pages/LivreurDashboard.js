@@ -28,7 +28,7 @@ const LivreurDashboard = () => {
     try {
       setDataLoading(true);
 
-      // Récupération simple de tous les colis
+      // Récupération simple de tous les colis qui sont assignés au livreur
       const { data: shipmentsData, error: shipmentsError } = await supabase
         .from("shipments")
         .select("*")
