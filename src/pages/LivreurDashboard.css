@@ -53,23 +53,41 @@
   margin-bottom: 1rem;
 }
 
-.tracking-form {
+.search-options {
   display: flex;
   gap: 1rem;
   margin-bottom: 1rem;
+  align-items: flex-start;
 }
 
-.tracking-form input {
+.tracking-form {
   flex: 1;
-  padding: 0.75rem;
-  border: 2px solid #eee;
-  border-radius: 4px;
-  font-size: 1rem;
+  margin: 0;
 }
 
-.tracking-form input:focus {
-  outline: none;
-  border-color: #ff7a30;
+.scanner-container {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+  max-width: 500px;
+}
+
+#reader {
+  width: 100% !important;
+}
+
+#reader video {
+  border-radius: 8px;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
 }
 
 .shipment-details {

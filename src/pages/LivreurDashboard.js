@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabase";
 import { Navigate } from "react-router-dom";
+import { Html5QrcodeScanner } from "html5-qrcode";
 import Sidebar from "../components/Sidebar";
 import "./LivreurDashboard.css";
 
@@ -17,6 +18,7 @@ const LivreurDashboard = () => {
   const [trackingNumber, setTrackingNumber] = useState("");
   const [selectedShipment, setSelectedShipment] = useState(null);
   const [message, setMessage] = useState({ type: "", text: "" });
+  const [isScanning, setIsScanning] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
@@ -24,64 +26,53 @@ const LivreurDashboard = () => {
     }
   }, [user, loading]);
 
-  const fetchData = async () => {
-    try {
-      setDataLoading(true);
-
-      // Récupération simple de tous les colis qui sont assignés au livreur
-      const { data: shipmentsData, error: shipmentsError } = await supabase
-        .from("shipments")
-        .select("*")
-        .eq("livreur_id", user.id)
-        .order("created_at", { ascending: false });
-
-      if (shipmentsError) throw shipmentsError;
-
-      setShipments(shipmentsData || []);
-
-      // Calculer les statistiques
-      const totalShipments = shipmentsData.length;
-      const totalRevenue = shipmentsData.reduce(
-        (sum, shipment) => sum + (shipment.price || 0),
-        0
-      );
-      const totalIncidents = shipmentsData.filter(
-        (s) => s.status === "incident"
-      ).length;
-
-      setStats({ totalShipments, totalRevenue, totalIncidents });
-    } catch (error) {
-      console.error("Erreur lors du chargement des données:", error);
-      setMessage({
-        type: "error",
-        text: "Erreur lors du chargement des données. Veuillez rafraîchir la page.",
+  useEffect(() => {
+    let scanner = null;
+    if (isScanning) {
+      scanner = new Html5QrcodeScanner("reader", {
+        qrbox: {
+          width: 250,
+          height: 250,
+        },
+        fps: 5,
       });
-    } finally {
-      setDataLoading(false);
+
+      scanner.render(onScanSuccess, onScanError);
+    }
+
+    return () => {
+      if (scanner) {
+        scanner.clear().catch(console.error);
+      }
+    };
+  }, [isScanning]);
+
+  const onScanSuccess = async (decodedText) => {
+    setIsScanning(false);
+    setTrackingNumber(decodedText);
+    await searchShipment(decodedText);
+  };
+
+  const onScanError = (error) => {
+    console.warn(error);
+  };
+
+  const toggleScanner = () => {
+    setIsScanning(!isScanning);
+    if (!isScanning) {
+      setSelectedShipment(null);
+      setMessage({ type: "", text: "" });
     }
   };
 
-  const handleTrackingSearch = async (e) => {
-    e.preventDefault();
-    setMessage({ type: "", text: "" });
-    setSelectedShipment(null);
-
-    if (!trackingNumber.trim()) {
-      setMessage({
-        type: "error",
-        text: "Veuillez entrer un numéro de suivi.",
-      });
-      return;
-    }
-
+  const searchShipment = async (tracking) => {
     try {
-      console.log("Recherche du colis avec le numéro:", trackingNumber.trim());
+      console.log("Recherche du colis avec le numéro:", tracking.trim());
 
-      // Recherche simple dans la table shipments
       const { data: shipment, error } = await supabase
         .from("shipments")
         .select("*")
-        .eq("tracking_number", trackingNumber.trim())
+        .eq("tracking_number", tracking.trim())
         .single();
 
       if (error) {
@@ -118,6 +109,59 @@ const LivreurDashboard = () => {
           "Une erreur est survenue lors de la recherche du colis."
         }`,
       });
+    }
+  };
+
+  const handleTrackingSearch = async (e) => {
+    e.preventDefault();
+    setMessage({ type: "", text: "" });
+    setSelectedShipment(null);
+
+    if (!trackingNumber.trim()) {
+      setMessage({
+        type: "error",
+        text: "Veuillez entrer un numéro de suivi.",
+      });
+      return;
+    }
+
+    await searchShipment(trackingNumber);
+  };
+
+  const fetchData = async () => {
+    try {
+      setDataLoading(true);
+
+      // Récupération simple de tous les colis qui sont assignés au livreur
+      const { data: shipmentsData, error: shipmentsError } = await supabase
+        .from("shipments")
+        .select("*")
+        .eq("livreur_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (shipmentsError) throw shipmentsError;
+
+      setShipments(shipmentsData || []);
+
+      // Calculer les statistiques
+      const totalShipments = shipmentsData.length;
+      const totalRevenue = shipmentsData.reduce(
+        (sum, shipment) => sum + (shipment.price || 0),
+        0
+      );
+      const totalIncidents = shipmentsData.filter(
+        (s) => s.status === "incident"
+      ).length;
+
+      setStats({ totalShipments, totalRevenue, totalIncidents });
+    } catch (error) {
+      console.error("Erreur lors du chargement des données:", error);
+      setMessage({
+        type: "error",
+        text: "Erreur lors du chargement des données. Veuillez rafraîchir la page.",
+      });
+    } finally {
+      setDataLoading(false);
     }
   };
 
@@ -271,18 +315,32 @@ const LivreurDashboard = () => {
           {/* Tracking Search */}
           <div className="tracking-section">
             <h2>Traiter un Colis</h2>
-            <form onSubmit={handleTrackingSearch} className="tracking-form">
-              <input
-                type="text"
-                value={trackingNumber}
-                onChange={(e) => setTrackingNumber(e.target.value)}
-                placeholder="Numéro de suivi"
-                required
-              />
-              <button type="submit" className="btn btn-primary">
-                Rechercher
+            <div className="search-options">
+              <form onSubmit={handleTrackingSearch} className="tracking-form">
+                <input
+                  type="text"
+                  value={trackingNumber}
+                  onChange={(e) => setTrackingNumber(e.target.value)}
+                  placeholder="Numéro de suivi"
+                  required
+                />
+                <button type="submit" className="btn btn-primary">
+                  Rechercher
+                </button>
+              </form>
+              <button
+                onClick={toggleScanner}
+                className={`btn ${isScanning ? "btn-danger" : "btn-secondary"}`}
+              >
+                {isScanning ? "Arrêter le scan" : "Scanner QR Code"}
               </button>
-            </form>
+            </div>
+
+            {isScanning && (
+              <div className="scanner-container">
+                <div id="reader"></div>
+              </div>
+            )}
 
             {message.text && (
               <div className={`message ${message.type}`}>{message.text}</div>

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { supabase } from '../supabase';
-import './Reservation.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { supabase } from "../supabase";
+import "./Reservation.css";
 
 const Reservation = () => {
   const navigate = useNavigate();
@@ -16,77 +16,85 @@ const Reservation = () => {
 
   const [formData, setFormData] = useState({
     // Étape 1 : Informations du colis
-    parcelType: '',
-    weight: '',
-    length: '',
-    width: '',
-    height: '',
-    destination: '',
-    description: '',
+    parcelType: "",
+    weight: "",
+    length: "",
+    width: "",
+    height: "",
+    destination: "",
+    description: "",
     // Étape 2 : Informations du destinataire
-    receiver_name: '',
-    receiver_phone: '',
-    receiver_email: '',
-    receiver_address: ''
+    receiver_name: "",
+    receiver_phone: "",
+    receiver_email: "",
+    receiver_address: "",
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     // Calcul du prix pour les champs weight et parcelType
-    if (name === 'weight' || name === 'parcelType') {
+    if (name === "weight" || name === "parcelType") {
       const basePrice = 10;
       const weightMultiplier = parseFloat(formData.weight) || 0;
-      const typeMultiplier = formData.parcelType === 'fragile' ? 1.5 : 1;
-      const calculatedPrice = basePrice + (weightMultiplier * typeMultiplier);
+      const typeMultiplier = formData.parcelType === "fragile" ? 1.5 : 1;
+      const calculatedPrice = basePrice + weightMultiplier * typeMultiplier;
       setPrice(calculatedPrice.toFixed(2));
     }
 
     // Gestion de l'autocomplétion d'adresse
-    if (name === 'receiver_address' && value.length > 2) {
-      fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(value)}`)
-        .then(response => response.json())
-        .then(data => {
+    if (name === "receiver_address" && value.length > 2) {
+      fetch(
+        `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(
+          value
+        )}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
           if (data && data.features) {
             setAddressSuggestions(data.features);
           } else {
             setAddressSuggestions([]);
           }
         })
-        .catch(error => {
-          console.error('Erreur lors de la récupération des adresses:', error);
+        .catch((error) => {
+          console.error("Erreur lors de la récupération des adresses:", error);
           setAddressSuggestions([]);
         });
-    } else if (name === 'receiver_address') {
+    } else if (name === "receiver_address") {
       setAddressSuggestions([]);
     }
 
     // Gestion de l'autocomplétion des villes
-    if (name === 'destination' && value.length > 2) {
-      fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(value)}&type=municipality`)
-        .then(response => response.json())
-        .then(data => {
+    if (name === "destination" && value.length > 2) {
+      fetch(
+        `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(
+          value
+        )}&type=municipality`
+      )
+        .then((response) => response.json())
+        .then((data) => {
           if (data && data.features) {
             // Filtrer pour n'avoir que des villes uniques
-            const uniqueCities = Array.from(new Set(
-              data.features.map(feature => feature.properties.city)
-            )).map(city => ({
-              properties: { label: city }
+            const uniqueCities = Array.from(
+              new Set(data.features.map((feature) => feature.properties.city))
+            ).map((city) => ({
+              properties: { label: city },
             }));
             setCitySuggestions(uniqueCities);
           } else {
             setCitySuggestions([]);
           }
         })
-        .catch(error => {
-          console.error('Erreur lors de la récupération des villes:', error);
+        .catch((error) => {
+          console.error("Erreur lors de la récupération des villes:", error);
           setCitySuggestions([]);
         });
-    } else if (name === 'destination') {
+    } else if (name === "destination") {
       setCitySuggestions([]);
     }
   };
@@ -94,9 +102,9 @@ const Reservation = () => {
   const handleAddressSelect = (suggestion) => {
     if (suggestion && suggestion.properties) {
       const fullAddress = suggestion.properties.label;
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        receiver_address: fullAddress
+        receiver_address: fullAddress,
       }));
       setAddressSuggestions([]);
     }
@@ -105,9 +113,9 @@ const Reservation = () => {
   const handleCitySelect = (suggestion) => {
     if (suggestion && suggestion.properties) {
       const city = suggestion.properties.label;
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        destination: city
+        destination: city,
       }));
       setCitySuggestions([]);
     }
@@ -123,9 +131,11 @@ const Reservation = () => {
   };
 
   const generateTrackingNumber = () => {
-    const prefix = 'COL';
+    const prefix = "COL";
     const timestamp = Date.now().toString().slice(-6);
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    const random = Math.floor(Math.random() * 1000)
+      .toString()
+      .padStart(3, "0");
     return `${prefix}${timestamp}${random}`;
   };
 
@@ -136,7 +146,7 @@ const Reservation = () => {
 
     try {
       if (!user) {
-        throw new Error('Utilisateur non connecté');
+        throw new Error("Utilisateur non connecté");
       }
 
       const trackingNumber = generateTrackingNumber();
@@ -144,13 +154,13 @@ const Reservation = () => {
       estimatedDelivery.setDate(estimatedDelivery.getDate() + 3);
 
       const { data: shipmentData, error: shipmentError } = await supabase
-        .from('shipments')
+        .from("shipments")
         .insert([
           {
             tracking_number: trackingNumber,
             user_id: user.id,
-            status: 'processing',
-            origin: 'France',
+            status: "processing",
+            origin: "France",
             destination: formData.destination,
             weight: parseFloat(formData.weight),
             description: formData.description,
@@ -158,41 +168,45 @@ const Reservation = () => {
             receiver_name: formData.receiver_name,
             receiver_phone: formData.receiver_phone,
             receiver_email: formData.receiver_email,
-            receiver_address: formData.receiver_address
-          }
+            receiver_address: formData.receiver_address,
+          },
         ])
         .select();
 
       if (shipmentError) {
-        console.error('Erreur Supabase (shipments):', shipmentError);
-        throw new Error(`Erreur lors de l'enregistrement du colis: ${shipmentError.message}`);
+        console.error("Erreur Supabase (shipments):", shipmentError);
+        throw new Error(
+          `Erreur lors de l'enregistrement du colis: ${shipmentError.message}`
+        );
       }
 
       // Créer une notification pour l'utilisateur
       const { error: notificationError } = await supabase
-        .from('notifications')
+        .from("notifications")
         .insert([
           {
             user_id: user.id,
             message: `Votre colis ${trackingNumber} a été enregistré avec succès.`,
-            is_read: false
-          }
+            is_read: false,
+          },
         ]);
 
       if (notificationError) {
-        console.error('Erreur Supabase (notifications):', notificationError);
+        console.error("Erreur Supabase (notifications):", notificationError);
       }
 
-      navigate('/dashboard', { 
-        state: { 
-          message: 'Votre colis a été enregistré avec succès !',
-          trackingNumber: trackingNumber
-        }
+      navigate("/dashboard", {
+        state: {
+          message: "Votre colis a été enregistré avec succès !",
+          trackingNumber: trackingNumber,
+        },
       });
-
     } catch (error) {
-      console.error('Erreur complète:', error);
-      setError(error.message || 'Une erreur est survenue lors de l\'enregistrement du colis. Veuillez réessayer.');
+      console.error("Erreur complète:", error);
+      setError(
+        error.message ||
+          "Une erreur est survenue lors de l'enregistrement du colis. Veuillez réessayer."
+      );
     } finally {
       setLoading(false);
     }
@@ -210,10 +224,10 @@ const Reservation = () => {
         )}
 
         <div className="steps-indicator">
-          <div className={`step ${currentStep === 1 ? 'active' : ''}`}>
+          <div className={`step ${currentStep === 1 ? "active" : ""}`}>
             1. Informations du colis
           </div>
-          <div className={`step ${currentStep === 2 ? 'active' : ''}`}>
+          <div className={`step ${currentStep === 2 ? "active" : ""}`}>
             2. Informations du destinataire
           </div>
         </div>
@@ -305,16 +319,18 @@ const Reservation = () => {
               />
               {Array.isArray(citySuggestions) && citySuggestions.length > 0 && (
                 <ul className="address-suggestions">
-                  {citySuggestions.map((suggestion, index) => (
-                    suggestion && suggestion.properties && (
-                      <li 
-                        key={index} 
-                        onClick={() => handleCitySelect(suggestion)}
-                      >
-                        {suggestion.properties.label}
-                      </li>
-                    )
-                  ))}
+                  {citySuggestions.map(
+                    (suggestion, index) =>
+                      suggestion &&
+                      suggestion.properties && (
+                        <li
+                          key={index}
+                          onClick={() => handleCitySelect(suggestion)}
+                        >
+                          {suggestion.properties.label}
+                        </li>
+                      )
+                  )}
                 </ul>
               )}
             </div>
@@ -338,19 +354,15 @@ const Reservation = () => {
             </div>
 
             <div className="form-actions">
-              <button 
-                type="button" 
-                className="btn-secondary" 
+              <button
+                type="button"
+                className="btn-secondary"
                 onClick={() => navigate(-1)}
                 disabled={loading}
               >
                 Annuler
               </button>
-              <button 
-                type="submit" 
-                className="btn-primary"
-                disabled={loading}
-              >
+              <button type="submit" className="btn-primary" disabled={loading}>
                 Suivant
               </button>
             </div>
@@ -407,37 +419,36 @@ const Reservation = () => {
                 rows="3"
                 required
               />
-              {Array.isArray(addressSuggestions) && addressSuggestions.length > 0 && (
-                <ul className="address-suggestions">
-                  {addressSuggestions.map((suggestion, index) => (
-                    suggestion && suggestion.properties && (
-                      <li 
-                        key={index} 
-                        onClick={() => handleAddressSelect(suggestion)}
-                      >
-                        {suggestion.properties.label}
-                      </li>
-                    )
-                  ))}
-                </ul>
-              )}
+              {Array.isArray(addressSuggestions) &&
+                addressSuggestions.length > 0 && (
+                  <ul className="address-suggestions">
+                    {addressSuggestions.map(
+                      (suggestion, index) =>
+                        suggestion &&
+                        suggestion.properties && (
+                          <li
+                            key={index}
+                            onClick={() => handleAddressSelect(suggestion)}
+                          >
+                            {suggestion.properties.label}
+                          </li>
+                        )
+                    )}
+                  </ul>
+                )}
             </div>
 
             <div className="form-actions">
-              <button 
-                type="button" 
-                className="btn-secondary" 
+              <button
+                type="button"
+                className="btn-secondary"
                 onClick={prevStep}
                 disabled={loading}
               >
                 Retour
               </button>
-              <button 
-                type="submit" 
-                className="btn-primary"
-                disabled={loading}
-              >
-                {loading ? 'Enregistrement...' : 'Confirmer l\'envoi'}
+              <button type="submit" className="btn-primary" disabled={loading}>
+                {loading ? "Enregistrement..." : "Confirmer l'envoi"}
               </button>
             </div>
           </form>
@@ -447,4 +458,4 @@ const Reservation = () => {
   );
 };
 
-export default Reservation; 
+export default Reservation;
