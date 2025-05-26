@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { supabase } from "../supabase";
 import { useAuth } from "../context/AuthContext";
-import Sidebar from "../components/Sidebar";
+import { Link } from "react-router-dom";
 import "./Affect.css";
 
 const Affect = () => {
@@ -32,7 +32,7 @@ const Affect = () => {
 
       // 2. Vérifier si l'utilisateur est un livreur en utilisant la table auth.users
       const { data: livreurData, error: livreurError } = await supabase
-        .from("auth_users_view") // This should be a view that joins auth.users with necessary tables
+        .from("auth_users_view")
         .select("id, email, metadata")
         .eq("email", email.toLowerCase())
         .single();
@@ -57,7 +57,8 @@ const Affect = () => {
         .from("shipments")
         .update({
           livreur_id: livreurData.id,
-          status: "in_transit",
+          status: "assigne",
+          updated_at: new Date().toISOString(),
         })
         .eq("tracking_number", trackingNumber.toUpperCase());
 
@@ -66,6 +67,21 @@ const Affect = () => {
         setMessage("Erreur lors de l'affectation du colis.");
         setLoading(false);
         return;
+      }
+
+      // 4. Créer une notification pour le livreur
+      const { error: notificationError } = await supabase
+        .from("notifications")
+        .insert({
+          user_id: livreurData.id,
+          message: `Un nouveau colis #${trackingNumber.toUpperCase()} vous a été assigné.`,
+          type: "assignment",
+          is_read: false,
+          created_at: new Date().toISOString(),
+        });
+
+      if (notificationError) {
+        console.error("Erreur notification:", notificationError);
       }
 
       setMessage("Le colis a été affecté au livreur avec succès !");
@@ -80,11 +96,15 @@ const Affect = () => {
   };
 
   return (
-    <div className="affect-container">
-      <Sidebar />
-      <div className="affect-content">
+    <div className="affect-page">
+      <header className="page-header">
         <h1>Affecter un colis à un livreur</h1>
+        <Link to="/depot/dashboard" className="back-button">
+          Retour au tableau de bord
+        </Link>
+      </header>
 
+      <div className="affect-content">
         <form onSubmit={handleAffect} className="affect-form">
           <div className="form-group">
             <label htmlFor="tracking_number">Numéro de suivi</label>

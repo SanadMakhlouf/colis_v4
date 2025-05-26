@@ -19,7 +19,10 @@ import Admin from "./pages/Admin";
 import LivreurDashboard from "./pages/LivreurDashboard";
 import MyShipments from "./pages/MyShipments";
 import Affect from "./pages/Affect";
-// Composant Demo (temporaire pour développement)
+import DepotDashboard from "./pages/DepotDashboard";
+import SearchColis from "./pages/SearchColis";
+import UpdateStatus from "./pages/UpdateStatus";
+import MesColisLivreur from "./pages/MesColisLivreur";
 
 // Auth Context
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -53,7 +56,9 @@ const DashboardRoute = () => {
     case "admin":
       return <Navigate to="/admin" replace />;
     case "livreur":
-      return <Navigate to="/LivreurDashboard" replace />;
+      return <Navigate to="/livreur/dashboard" replace />;
+    case "depot":
+      return <Navigate to="/depot/dashboard" replace />;
     default: // client
       return <Dashboard />;
   }
@@ -149,7 +154,7 @@ function App() {
 
           {/* Route protégée pour les livreurs */}
           <Route
-            path="/LivreurDashboard"
+            path="/livreur/dashboard"
             element={
               <ProtectedRoute requiredRole="livreur">
                 <LivreurDashboard />
@@ -157,12 +162,48 @@ function App() {
             }
           />
 
-          {/* Nouvelle route pour l'affectation des colis */}
+          <Route
+            path="/livreur/mes-colis"
+            element={
+              <ProtectedRoute requiredRole="livreur">
+                <MesColisLivreur />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Routes protégées pour le dépôt */}
+          <Route
+            path="/depot/dashboard"
+            element={
+              <ProtectedRoute requiredRole="depot">
+                <DepotDashboard />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/affect"
             element={
-              <ProtectedRoute requiredRole="admin">
+              <ProtectedRoute requiredRole="depot">
                 <Affect />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/depot/search-colis"
+            element={
+              <ProtectedRoute requiredRole="depot">
+                <SearchColis />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/depot/update-status"
+            element={
+              <ProtectedRoute requiredRole="depot">
+                <UpdateStatus />
               </ProtectedRoute>
             }
           />

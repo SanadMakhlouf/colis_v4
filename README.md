@@ -6,27 +6,33 @@ Une application web moderne pour la gestion de colis et de livraisons, construit
 
 ### Pour les Clients
 
-- Création et suivi de colis
-- Tableau de bord personnalisé
-- Historique des livraisons
-- Notifications en temps réel
-- Suivi de l'état des colis
-
+- Inscription et connexion sécurisée
+- Création de nouveaux colis avec description détaillée
+- Suivi en temps réel de l'état des colis
+- Historique complet des livraisons
+- Évaluation des services de livraison
+- Modification des informations personnelles
 ### Pour les Livreurs
 
-- Tableau de bord dédié
-- Gestion des livraisons assignées
-- Mise à jour du statut des colis
-- Historique des livraisons effectuées
-- Signalement d'incidents
+- Interface dédiée aux livraisons
+- Liste des colis à livrer avec priorités
+- Navigation GPS intégrée
+- Mise à jour du statut des livraisons en temps réel
+- Capture de signature à la livraison
+- Rapport d'incidents avec photos
+- Planning des livraisons
+- Statistiques personnelles
 
 ### Pour les Administrateurs
 
-- Gestion complète des utilisateurs
-- Affectation des colis aux livreurs
-- Supervision des livraisons
-- Statistiques et rapports
-- Gestion des rôles utilisateurs
+- Tableau de bord complet
+- Gestion des utilisateurs (clients et livreurs)
+- Affectation automatique et manuelle des colis
+- Suivi des performances des livreurs
+- Génération de rapports détaillés
+- Gestion des zones de livraison
+- Configuration des tarifs
+- Gestion des réclamations
 
 ## 🛠 Technologies Utilisées
 

@@ -1,0 +1,178 @@
+.search-colis {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-colis h2 {
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.search-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-description {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.search-form {
+  margin-bottom: 2rem;
+}
+
+.search-type {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-type label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.search-input {
+  display: flex;
+  gap: 1rem;
+}
+
+.search-input input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.search-input button {
+  padding: 0.75rem 1.5rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.search-input button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #dc3545;
+  margin: 1rem 0;
+  padding: 0.75rem;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.parcel-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.parcel-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.parcel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-processing {
+  background-color: #fff3cd;
+  color: #856404;
+}
+.status-assigned {
+  background-color: #cce5ff;
+  color: #004085;
+}
+.status-in-transit {
+  background-color: #d4edda;
+  color: #155724;
+}
+.status-delivered {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+.status-returned {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+.status-picked-up {
+  background-color: #e2e3e5;
+  color: #383d41;
+}
+
+.tracking-number {
+  font-weight: 600;
+  color: #666;
+}
+
+.parcel-summary {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.parcel-summary p {
+  margin: 0.5rem 0;
+}
+
+.shipment-details {
+  padding: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  margin: 1rem 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-label {
+  width: 150px;
+  font-weight: 600;
+  color: #666;
+}
+
+.detail-value {
+  flex: 1;
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  font-size: 1.125rem;
+}

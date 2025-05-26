@@ -1,0 +1,227 @@
+import React, { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { supabase } from "../supabase";
+import Modal from "../components/Modal";
+import StatusBadge from "../components/StatusBadge";
+import "./SearchColis.css";
+
+const SearchColis = () => {
+  const { user } = useAuth();
+  const [searchType, setSearchType] = useState("tracking");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [selectedParcel, setSelectedParcel] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSearchResults([]);
+
+    try {
+      let query = supabase.from("shipments").select("*");
+
+      // Appliquer le filtre selon le type de recherche
+      switch (searchType) {
+        case "tracking":
+          query = query.ilike("tracking_number", `%${searchQuery}%`);
+          break;
+        case "deliverer":
+          query = query.eq("livreur_id", searchQuery);
+          break;
+        case "client":
+          query = query.eq("user_id", searchQuery);
+          break;
+        default:
+          break;
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        setSearchResults(data);
+      } else {
+        setError("Aucun colis trouvé avec ces critères.");
+      }
+    } catch (error) {
+      console.error("Erreur de recherche:", error);
+      setError("Une erreur est survenue lors de la recherche.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("fr-FR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const handleParcelClick = (parcel) => {
+    setSelectedParcel(parcel);
+    setIsModalOpen(true);
+  };
+
+  return (
+    <div className="search-colis">
+      <div className="search-container">
+        <h1>Rechercher un Colis</h1>
+        <p className="search-description">
+          Recherchez un colis par son numéro de suivi, livreur ou client.
+        </p>
+
+        <form onSubmit={handleSearch} className="search-form">
+          <div className="search-type">
+            <label>
+              <input
+                type="radio"
+                value="tracking"
+                checked={searchType === "tracking"}
+                onChange={(e) => setSearchType(e.target.value)}
+              />
+              Numéro de Tracking
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="deliverer"
+                checked={searchType === "deliverer"}
+                onChange={(e) => setSearchType(e.target.value)}
+              />
+              Nom du Livreur
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="client"
+                checked={searchType === "client"}
+                onChange={(e) => setSearchType(e.target.value)}
+              />
+              Nom du Client
+            </label>
+          </div>
+
+          <div className="search-input">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={`Rechercher par ${
+                searchType === "tracking"
+                  ? "numéro de tracking"
+                  : searchType === "deliverer"
+                  ? "nom du livreur"
+                  : "nom du client"
+              }`}
+              required
+            />
+            <button type="submit" disabled={loading}>
+              {loading ? "Recherche..." : "Rechercher"}
+            </button>
+          </div>
+        </form>
+
+        {error && <div className="error-message">{error}</div>}
+
+        <div className="search-results">
+          {searchResults.length > 0 && (
+            <div className="results-grid">
+              {searchResults.map((parcel) => (
+                <div
+                  key={parcel.id}
+                  className="parcel-card"
+                  onClick={() => handleParcelClick(parcel)}
+                >
+                  <div className="parcel-header">
+                    <StatusBadge status={parcel.status} withIcon />
+                    <span className="tracking-number">
+                      {parcel.tracking_number}
+                    </span>
+                  </div>
+                  <div className="parcel-summary">
+                    <p>
+                      <strong>Destination:</strong> {parcel.destination_address}
+                    </p>
+                    <p>
+                      <strong>Date:</strong> {formatDate(parcel.created_at)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          {selectedParcel && (
+            <div className="shipment-details">
+              <h3>Détails du Colis #{selectedParcel.tracking_number}</h3>
+
+              <div className="detail-item">
+                <div className="detail-label">Statut</div>
+                <div className="detail-value">
+                  <StatusBadge
+                    status={selectedParcel.status}
+                    withIcon
+                    isActive
+                  />
+                </div>
+              </div>
+
+              <div className="detail-item">
+                <div className="detail-label">Origine</div>
+                <div className="detail-value">
+                  {selectedParcel.origin_address}
+                </div>
+              </div>
+
+              <div className="detail-item">
+                <div className="detail-label">Destination</div>
+                <div className="detail-value">
+                  {selectedParcel.destination_address}
+                </div>
+              </div>
+
+              <div className="detail-item">
+                <div className="detail-label">Poids</div>
+                <div className="detail-value">{selectedParcel.weight} kg</div>
+              </div>
+
+              <div className="detail-item">
+                <div className="detail-label">Description</div>
+                <div className="detail-value">
+                  {selectedParcel.description || "Aucune description"}
+                </div>
+              </div>
+
+              <div className="detail-item">
+                <div className="detail-label">Date de création</div>
+                <div className="detail-value">
+                  {formatDate(selectedParcel.created_at)}
+                </div>
+              </div>
+
+              <div className="detail-item">
+                <div className="detail-label">Dernière mise à jour</div>
+                <div className="detail-value">
+                  {formatDate(selectedParcel.updated_at)}
+                </div>
+              </div>
+            </div>
+          )}
+        </Modal>
+      </div>
+    </div>
+  );
+};
+
+export default SearchColis;
