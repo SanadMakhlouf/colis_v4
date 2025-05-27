@@ -22,7 +22,6 @@ import Affect from "./pages/Affect";
 import DepotDashboard from "./pages/DepotDashboard";
 import SearchColis from "./pages/SearchColis";
 import UpdateStatus from "./pages/UpdateStatus";
-import MesColisLivreur from "./pages/MesColisLivreur";
 
 // Auth Context
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -166,7 +165,7 @@ function App() {
             path="/livreur/mes-colis"
             element={
               <ProtectedRoute requiredRole="livreur">
-                <MesColisLivreur />
+                <MyShipments />
               </ProtectedRoute>
             }
           />

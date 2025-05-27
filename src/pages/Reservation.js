@@ -30,19 +30,6 @@ const Reservation = () => {
     receiver_address: "",
   });
 
-  // Liste temporaire des villes françaises
-  const FRENCH_CITIES = [
-    { name: "Paris", country: "France", population: 2148271 },
-    { name: "Marseille", country: "France", population: 850726 },
-    { name: "Lyon", country: "France", population: 513275 },
-    { name: "Toulouse", country: "France", population: 471941 },
-    { name: "Nice", country: "France", population: 342669 },
-    { name: "Nantes", country: "France", population: 309346 },
-    { name: "Strasbourg", country: "France", population: 277270 },
-    { name: "Montpellier", country: "France", population: 277639 },
-    { name: "Bordeaux", country: "France", population: 254436 },
-    { name: "Lille", country: "France", population: 232741 },
-  ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

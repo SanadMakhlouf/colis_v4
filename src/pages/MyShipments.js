@@ -5,6 +5,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import Modal from "../components/Modal";
 import Sidebar from "../components/Sidebar";
 import ShipmentLabel from "../components/ShipmentLabel";
+import StatusBadge from "../components/StatusBadge";
 import "./MyShipments.css";
 
 const MyShipments = () => {
@@ -16,6 +17,8 @@ const MyShipments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
 
+  const isLivreur = user?.user_metadata?.role === "livreur";
+
   useEffect(() => {
     fetchShipments();
   }, [user]);
@@ -26,7 +29,7 @@ const MyShipments = () => {
       const { data, error } = await supabase
         .from("shipments")
         .select("*")
-        .eq("user_id", user.id)
+        .eq(isLivreur ? "livreur_id" : "user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -35,21 +38,6 @@ const MyShipments = () => {
       console.error("Erreur lors du chargement des colis:", error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getStatusBadgeClass = (status) => {
-    switch (status) {
-      case "processing":
-        return "status-processing";
-      case "in_transit":
-        return "status-in-transit";
-      case "delivered":
-        return "status-delivered";
-      case "cancelled":
-        return "status-cancelled";
-      default:
-        return "";
     }
   };
 
@@ -87,11 +75,15 @@ const MyShipments = () => {
       <Sidebar />
       <div className="myshipments-content">
         <div className="myshipments-header">
-          <h1>Mes Colis</h1>
+          <h1>{isLivreur ? "Mes Livraisons" : "Mes Colis"}</h1>
           <div className="search-filters">
             <input
               type="text"
-              placeholder="Rechercher un colis..."
+              placeholder={
+                isLivreur
+                  ? "Rechercher une livraison..."
+                  : "Rechercher un colis..."
+              }
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
@@ -102,10 +94,20 @@ const MyShipments = () => {
               className="status-filter"
             >
               <option value="all">Tous les statuts</option>
-              <option value="processing">En traitement</option>
-              <option value="in_transit">En transit</option>
-              <option value="delivered">Livré</option>
-              <option value="cancelled">Annulé</option>
+              {isLivreur ? (
+                <>
+                  <option value="assigned">Assigné</option>
+                  <option value="in_transit">En cours de livraison</option>
+                  <option value="delivered">Livré</option>
+                </>
+              ) : (
+                <>
+                  <option value="processing">En traitement</option>
+                  <option value="in_transit">En transit</option>
+                  <option value="delivered">Livré</option>
+                  <option value="cancelled">Annulé</option>
+                </>
+              )}
             </select>
           </div>
         </div>
@@ -113,11 +115,11 @@ const MyShipments = () => {
         {loading ? (
           <div className="loading-container">
             <div className="loading-spinner"></div>
-            <p>Chargement des colis...</p>
+            <p>Chargement {isLivreur ? "des livraisons" : "des colis"}...</p>
           </div>
         ) : filteredShipments.length === 0 ? (
           <div className="no-shipments">
-            <p>Aucun colis trouvé</p>
+            <p>Aucun {isLivreur ? "livraison" : "colis"} trouvé</p>
           </div>
         ) : (
           <div className="shipments-grid">
@@ -129,21 +131,32 @@ const MyShipments = () => {
               >
                 <div className="shipment-header">
                   <h3>Colis #{shipment.tracking_number}</h3>
-                  <span
-                    className={`status-badge ${getStatusBadgeClass(
-                      shipment.status
-                    )}`}
-                  >
-                    {shipment.status}
-                  </span>
+                  <StatusBadge status={shipment.status} withIcon />
                 </div>
                 <div className="shipment-details">
                   <p>
-                    <strong>Destination:</strong> {shipment.destination}
+                    <strong>Origine:</strong> {shipment.origin}
                   </p>
                   <p>
-                    <strong>Destinataire:</strong> {shipment.receiver_name}
+                    <strong>Destination:</strong> {shipment.destination}
                   </p>
+                  {isLivreur ? (
+                    <>
+                      <p>
+                        <strong>Client:</strong> {shipment.receiver_name}
+                      </p>
+                      <p>
+                        <strong>Téléphone:</strong> {shipment.receiver_phone}
+                      </p>
+                      <p>
+                        <strong>Adresse:</strong> {shipment.receiver_address}
+                      </p>
+                    </>
+                  ) : (
+                    <p>
+                      <strong>Destinataire:</strong> {shipment.receiver_name}
+                    </p>
+                  )}
                   <p>
                     <strong>Date d'envoi:</strong>{" "}
                     {formatDate(shipment.created_at)}
@@ -163,13 +176,11 @@ const MyShipments = () => {
                   <div className="detail-item">
                     <div className="detail-label">Statut</div>
                     <div className="detail-value">
-                      <span
-                        className={`status-badge ${getStatusBadgeClass(
-                          selectedShipment.status
-                        )}`}
-                      >
-                        {selectedShipment.status}
-                      </span>
+                      <StatusBadge
+                        status={selectedShipment.status}
+                        withIcon
+                        isActive
+                      />
                     </div>
                   </div>
 
@@ -246,17 +257,21 @@ const MyShipments = () => {
                   </div>
                 </div>
               </div>
-              <div className="modal-actions">
-                <PDFDownloadLink
-                  document={<ShipmentLabel shipment={selectedShipment} />}
-                  fileName={`bordereau-${selectedShipment.tracking_number}.pdf`}
-                  className="print-button"
-                >
-                  {({ blob, url, loading, error }) =>
-                    loading ? "Préparation du PDF..." : "Imprimer le Bordereau"
-                  }
-                </PDFDownloadLink>
-              </div>
+              {!isLivreur && (
+                <div className="modal-actions">
+                  <PDFDownloadLink
+                    document={<ShipmentLabel shipment={selectedShipment} />}
+                    fileName={`bordereau-${selectedShipment.tracking_number}.pdf`}
+                    className="print-button"
+                  >
+                    {({ blob, url, loading, error }) =>
+                      loading
+                        ? "Préparation du PDF..."
+                        : "Imprimer le Bordereau"
+                    }
+                  </PDFDownloadLink>
+                </div>
+              )}
             </>
           )}
         </Modal>
