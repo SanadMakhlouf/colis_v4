@@ -30,6 +30,20 @@ const Reservation = () => {
     receiver_address: "",
   });
 
+  // Liste temporaire des villes françaises
+  const FRENCH_CITIES = [
+    { name: "Paris", country: "France", population: 2148271 },
+    { name: "Marseille", country: "France", population: 850726 },
+    { name: "Lyon", country: "France", population: 513275 },
+    { name: "Toulouse", country: "France", population: 471941 },
+    { name: "Nice", country: "France", population: 342669 },
+    { name: "Nantes", country: "France", population: 309346 },
+    { name: "Strasbourg", country: "France", population: 277270 },
+    { name: "Montpellier", country: "France", population: 277639 },
+    { name: "Bordeaux", country: "France", population: 254436 },
+    { name: "Lille", country: "France", population: 232741 },
+  ];
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -71,31 +85,66 @@ const Reservation = () => {
 
     // Gestion de l'autocomplétion des villes
     if (name === "destination" && value.length > 2) {
+      setError(null); // Réinitialiser les erreurs précédentes
       fetch(
-        `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(
+        `https://secure.geonames.org/searchJSON?q=${encodeURIComponent(
           value
-        )}&type=municipality`
+        )}&maxRows=10&username=didou&featureClass=P&
+        style=FULL&lang=fr&cities=cities15000`
       )
-        .then((response) => response.json())
+        .then(async (response) => {
+          if (!response.ok) {
+            const errorData = await response.json();
+            if (errorData.status?.value === 10) {
+              throw new Error(
+                "Le compte GeoNames n'est pas correctement configuré. Veuillez réessayer dans quelques minutes."
+              );
+            } else if (errorData.status?.value === 18) {
+              throw new Error(
+                "Limite quotidienne atteinte. Veuillez réessayer demain."
+              );
+            } else if (errorData.status?.value === 19) {
+              throw new Error(
+                "Limite horaire atteinte. Veuillez réessayer dans une heure."
+              );
+            } else {
+              throw new Error(
+                errorData.status?.message || `Erreur: ${response.status}`
+              );
+            }
+          }
+          return response.json();
+        })
         .then((data) => {
-          if (data && data.features) {
-            // Filtrer pour n'avoir que des villes uniques
-            const uniqueCities = Array.from(
-              new Set(data.features.map((feature) => feature.properties.city))
-            ).map((city) => ({
-              properties: { label: city },
+          if (data.status) {
+            throw new Error(data.status.message || "Erreur API");
+          }
+          if (data && data.geonames && data.geonames.length > 0) {
+            const cities = data.geonames.map((city) => ({
+              properties: {
+                label: `${city.name}${
+                  city.countryName ? `, ${city.countryName}` : ""
+                }${city.adminName1 ? ` (${city.adminName1})` : ""}`,
+                city: city.name,
+                country: city.countryName,
+                population: city.population,
+                region: city.adminName1,
+              },
             }));
-            setCitySuggestions(uniqueCities);
+            setCitySuggestions(cities);
           } else {
             setCitySuggestions([]);
+            setError("Aucune ville trouvée pour cette recherche.");
           }
         })
         .catch((error) => {
-          console.error("Erreur lors de la récupération des villes:", error);
+          console.error("Erreur lors de la recherche des villes:", error);
           setCitySuggestions([]);
+          setError(error.message);
         });
     } else if (name === "destination") {
       setCitySuggestions([]);
+      setError(null);
     }
   };
 
@@ -327,7 +376,24 @@ const Reservation = () => {
                           key={index}
                           onClick={() => handleCitySelect(suggestion)}
                         >
-                          {suggestion.properties.label}
+                          <div className="city-info">
+                            <span className="city-name">
+                              {suggestion.properties.city}
+                            </span>
+                            {suggestion.properties.country && (
+                              <span className="country-name">
+                                {suggestion.properties.country}
+                              </span>
+                            )}
+                          </div>
+                          {suggestion.properties.population && (
+                            <span className="population">
+                              {new Intl.NumberFormat("fr-FR").format(
+                                suggestion.properties.population
+                              )}{" "}
+                              hab.
+                            </span>
+                          )}
                         </li>
                       )
                   )}

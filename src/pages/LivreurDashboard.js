@@ -406,6 +406,12 @@ const LivreurDashboard = () => {
                     <strong>Vers:</strong> {selectedShipment.destination}
                   </p>
                   <p>
+                    <strong>numero telephone:</strong> {selectedShipment.receiver_phone}
+                  </p>
+                  <p>
+                    <strong>Nom</strong> {selectedShipment.receiver_name}
+                  </p>
+                  <p>
                     <strong>Date de création:</strong>{" "}
                     {formatDate(selectedShipment.created_at)}
                   </p>

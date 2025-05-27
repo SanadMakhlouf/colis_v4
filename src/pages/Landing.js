@@ -1,7 +1,8 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import './Landing.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import "./Landing.css";
+import logo from "../assets/akm_consulting_logo_sansbg.png";
 
 const Landing = () => {
   const { user } = useAuth();
@@ -12,8 +13,8 @@ const Landing = () => {
       <nav className="navbar">
         <div className="navbar-container">
           <div className="navbar-logo">
-            <img src="/logo192.png" alt="Colis Logo" />
-            <span>COLIS</span>
+            <img src={logo} alt="akm logo" />
+            <span>Akm transport</span>
           </div>
           <div className="navbar-links">
             <a href="#services">Services</a>
@@ -24,13 +25,21 @@ const Landing = () => {
           <div className="navbar-buttons">
             {user ? (
               <>
-                <Link to="/reservation" className="btn btn-primary">Nouvel Envoi</Link>
-                <Link to="/dashboard" className="btn btn-secondary">Tableau de Bord</Link>
+                <Link to="/reservation" className="btn btn-primary">
+                  Nouvel Envoi
+                </Link>
+                <Link to="/dashboard" className="btn btn-secondary">
+                  Tableau de Bord
+                </Link>
               </>
             ) : (
               <>
-                <Link to="/login" className="btn btn-login">Connexion</Link>
-                <Link to="/register" className="btn btn-register">S'inscrire</Link>
+                <Link to="/login" className="btn btn-login">
+                  Connexion
+                </Link>
+                <Link to="/register" className="btn btn-register">
+                  S'inscrire
+                </Link>
               </>
             )}
           </div>
@@ -42,22 +51,31 @@ const Landing = () => {
         <div className="hero-container">
           <div className="hero-content">
             <h1>Livraison de Colis Simplifiée</h1>
-            <p>Une solution moderne pour suivre et gérer vos envois en toute simplicité</p>
+            <p>
+              Une solution moderne pour suivre et gérer vos envois en toute
+              simplicité
+            </p>
             <div className="hero-buttons">
               {user ? (
-                <Link to="/reservation" className="btn btn-primary">Nouvel Envoi</Link>
+                <Link to="/reservation" className="btn btn-primary">
+                  Nouvel Envoi
+                </Link>
               ) : (
                 <>
-                  <Link to="/register" className="btn btn-primary">Commencer</Link>
-                  <Link to="/demo" className="btn btn-secondary">Voir la Démo</Link>
+                  <Link to="/register" className="btn btn-primary">
+                    Commencer
+                  </Link>
+                  <Link to="/demo" className="btn btn-secondary">
+                    Voir la Démo
+                  </Link>
                 </>
               )}
             </div>
           </div>
           <div className="hero-image">
-            <img 
-              src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
-              alt="Livraison de colis" 
+            <img
+              src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+              alt="Livraison de colis"
             />
           </div>
         </div>
@@ -139,7 +157,9 @@ const Landing = () => {
         <div className="cta-content">
           <h2>Prêt à Commencer ?</h2>
           <p>Rejoignez des milliers d'utilisateurs satisfaits</p>
-          <Link to="/register" className="btn btn-primary">Créer un Compte</Link>
+          <Link to="/register" className="btn btn-primary">
+            Créer un Compte
+          </Link>
         </div>
       </section>
 
@@ -149,25 +169,43 @@ const Landing = () => {
           <div className="footer-section">
             <h4>À Propos</h4>
             <ul>
-              <li><a href="#about">Notre Histoire</a></li>
-              <li><a href="#team">Notre Équipe</a></li>
-              <li><a href="#careers">Carrières</a></li>
+              <li>
+                <a href="#about">Notre Histoire</a>
+              </li>
+              <li>
+                <a href="#team">Notre Équipe</a>
+              </li>
+              <li>
+                <a href="#careers">Carrières</a>
+              </li>
             </ul>
           </div>
           <div className="footer-section">
             <h4>Services</h4>
             <ul>
-              <li><a href="#express">Livraison Express</a></li>
-              <li><a href="#international">International</a></li>
-              <li><a href="#business">Solutions Business</a></li>
+              <li>
+                <a href="#express">Livraison Express</a>
+              </li>
+              <li>
+                <a href="#international">International</a>
+              </li>
+              <li>
+                <a href="#business">Solutions Business</a>
+              </li>
             </ul>
           </div>
           <div className="footer-section">
             <h4>Contact</h4>
             <ul>
-              <li><a href="#support">Support</a></li>
-              <li><a href="#contact">Contactez-nous</a></li>
-              <li><a href="#faq">FAQ</a></li>
+              <li>
+                <a href="#support">Support</a>
+              </li>
+              <li>
+                <a href="#contact">Contactez-nous</a>
+              </li>
+              <li>
+                <a href="#faq">FAQ</a>
+              </li>
             </ul>
           </div>
         </div>
@@ -179,4 +217,4 @@ const Landing = () => {
   );
 };
 
-export default Landing; 
+export default Landing;

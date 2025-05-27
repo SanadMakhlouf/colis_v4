@@ -22,37 +22,73 @@ const SearchColis = () => {
     setSearchResults([]);
 
     try {
-      let query = supabase.from("shipments").select("*");
-
-      // Appliquer le filtre selon le type de recherche
-      switch (searchType) {
-        case "tracking":
-          query = query.ilike("tracking_number", `%${searchQuery}%`);
-          break;
-        case "deliverer":
-          query = query.eq("livreur_id", searchQuery);
-          break;
-        case "client":
-          query = query.eq("user_id", searchQuery);
-          break;
-        default:
-          break;
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        setSearchResults(data);
+      if (searchType === "client") {
+        const results = await handleSearchByClientName(searchQuery);
+        if (results.length > 0) {
+          setSearchResults(results);
+        } else {
+          setError("Aucun colis trouvé pour ce client.");
+        }
       } else {
-        setError("Aucun colis trouvé avec ces critères.");
+        // Recherche par numéro de tracking
+        const { data, error } = await supabase
+          .from("shipments")
+          .select("*")
+          .ilike("tracking_number", `%${searchQuery}%`);
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          setSearchResults(data);
+        } else {
+          setError("Aucun colis trouvé avec ce numéro de suivi.");
+        }
       }
     } catch (error) {
       console.error("Erreur de recherche:", error);
       setError("Une erreur est survenue lors de la recherche.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSearchByClientName = async (query) => {
+    try {
+      // Utiliser la fonction existante get_user_by_email
+      const { data: userData, error: userError } = await supabase.rpc(
+        "get_user_by_email",
+        {
+          p_email: query,
+        }
+      );
+
+      if (userError) {
+        console.error(
+          "Erreur lors de la recherche des utilisateurs:",
+          userError
+        );
+        throw userError;
+      }
+
+      if (!userData || !userData.id) {
+        return [];
+      }
+
+      // Récupérer les colis pour l'utilisateur trouvé
+      const { data: shipments, error: shipmentError } = await supabase
+        .from("shipments")
+        .select("*")
+        .eq("user_id", userData.id);
+
+      if (shipmentError) {
+        console.error("Erreur lors de la recherche des colis:", shipmentError);
+        throw shipmentError;
+      }
+
+      return shipments || [];
+    } catch (error) {
+      console.error("Error in handleSearchByClientName:", error);
+      throw error;
     }
   };
 
@@ -76,7 +112,7 @@ const SearchColis = () => {
       <div className="search-container">
         <h1>Rechercher un Colis</h1>
         <p className="search-description">
-          Recherchez un colis par son numéro de suivi, livreur ou client.
+          Recherchez un colis par son numéro de suivi ou par nom de client.
         </p>
 
         <form onSubmit={handleSearch} className="search-form">
@@ -89,15 +125,6 @@ const SearchColis = () => {
                 onChange={(e) => setSearchType(e.target.value)}
               />
               Numéro de Tracking
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="deliverer"
-                checked={searchType === "deliverer"}
-                onChange={(e) => setSearchType(e.target.value)}
-              />
-              Nom du Livreur
             </label>
             <label>
               <input
@@ -115,13 +142,11 @@ const SearchColis = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={`Rechercher par ${
+              placeholder={
                 searchType === "tracking"
-                  ? "numéro de tracking"
-                  : searchType === "deliverer"
-                  ? "nom du livreur"
-                  : "nom du client"
-              }`}
+                  ? "Entrez le numéro de tracking"
+                  : "Entrez le nom du client"
+              }
               required
             />
             <button type="submit" disabled={loading}>
@@ -149,7 +174,7 @@ const SearchColis = () => {
                   </div>
                   <div className="parcel-summary">
                     <p>
-                      <strong>Destination:</strong> {parcel.destination_address}
+                      <strong>Destination:</strong> {parcel.destination}
                     </p>
                     <p>
                       <strong>Date:</strong> {formatDate(parcel.created_at)}
@@ -179,16 +204,12 @@ const SearchColis = () => {
 
               <div className="detail-item">
                 <div className="detail-label">Origine</div>
-                <div className="detail-value">
-                  {selectedParcel.origin_address}
-                </div>
+                <div className="detail-value">{selectedParcel.origin}</div>
               </div>
 
               <div className="detail-item">
                 <div className="detail-label">Destination</div>
-                <div className="detail-value">
-                  {selectedParcel.destination_address}
-                </div>
+                <div className="detail-value">{selectedParcel.destination}</div>
               </div>
 
               <div className="detail-item">

@@ -83,13 +83,14 @@
 .form-group textarea,
 .form-group select {
   width: 100%;
-  padding: 12px;
+  padding: 12px 16px;
   border: 2px solid #e0e0e0;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 16px;
   color: #333;
   background-color: #ffffff;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .form-group input:focus,
@@ -98,6 +99,7 @@
   border-color: #ff7a30;
   box-shadow: 0 0 0 3px rgba(255, 122, 48, 0.1);
   outline: none;
+  background-color: #fff;
 }
 
 .form-group input::placeholder,
@@ -356,7 +358,7 @@
 
 .form-group {
   position: relative;
-  margin-bottom: 35px;
+  margin-bottom: 24px;
 }
 
 .form-group input:focus,
@@ -473,14 +475,14 @@
 .address-suggestions {
   list-style: none;
   padding: 0;
-  margin-top: 5px;
+  margin-top: 87px;
   position: absolute;
   width: 100%;
-  max-height: 250px;
+  max-height: 300px;
   overflow-y: auto;
   background: white;
-  border: 2px solid #ff7a30;
-  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
 }
@@ -493,6 +495,9 @@
   color: #333;
   font-size: 14px;
   line-height: 1.4;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .address-suggestions li:last-child {
@@ -504,24 +509,77 @@
   color: #ff7a30;
 }
 
-/* Amélioration du style du conteneur de l'adresse */
-.form-group:has(#receiver_address),
-.form-group:has(#destination) {
-  position: relative;
-  margin-bottom: 2rem;
+.address-suggestions li .city-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.form-group textarea#receiver_address {
-  min-height: 100px;
-  resize: vertical;
-  line-height: 1.5;
-}
-
-/* Style pour le label */
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  color: #444;
+.address-suggestions li .city-name {
   font-weight: 500;
-  font-size: 14px;
+}
+
+.address-suggestions li .country-name {
+  font-size: 12px;
+  color: #666;
+}
+
+.address-suggestions li .population {
+  font-size: 12px;
+  color: #666;
+  background-color: #f5f5f5;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+/* Style spécifique pour le champ de destination */
+.form-group input#destination {
+  font-weight: 500;
+  background-color: #fff;
+  padding-right: 40px;
+  height: 48px; /* Hauteur fixe pour éviter les sauts */
+  font-size: 16px;
+}
+
+.form-group input#destination:focus {
+  background-color: #fff;
+  border-color: #ff7a30;
+  box-shadow: 0 0 0 3px rgba(255, 122, 48, 0.1);
+}
+
+/* Ajout d'une icône de recherche */
+.form-group:has(#destination)::after {
+  content: "🔍";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  pointer-events: none;
+  font-size: 18px;
+}
+
+/* Animation de chargement pour l'input */
+.form-group input#destination.loading {
+  background-image: linear-gradient(
+    45deg,
+    #f5f5f5 25%,
+    transparent 25%,
+    transparent 50%,
+    #f5f5f5 50%,
+    #f5f5f5 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 1rem 1rem;
+  animation: loading-stripes 1s linear infinite;
+}
+
+@keyframes loading-stripes {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 1rem 0;
+  }
 }

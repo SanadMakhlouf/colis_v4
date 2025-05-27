@@ -2,7 +2,12 @@ import React from "react";
 import PropTypes from "prop-types";
 import "./StatusBadge.css";
 
-const StatusBadge = ({ status, withIcon, isActive, className }) => {
+const StatusBadge = ({
+  status,
+  withIcon = false,
+  isActive = false,
+  className = "",
+}) => {
   // Fonction pour normaliser le statut (enlever les accents et mettre en minuscules)
   const normalizeStatus = (status) => {
     return status
@@ -66,12 +71,6 @@ StatusBadge.propTypes = {
   withIcon: PropTypes.bool,
   isActive: PropTypes.bool,
   className: PropTypes.string,
-};
-
-StatusBadge.defaultProps = {
-  withIcon: false,
-  isActive: false,
-  className: "",
 };
 
 export default StatusBadge;

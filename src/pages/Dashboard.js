@@ -185,7 +185,7 @@ const Dashboard = () => {
                 <span className="notification-badge">{unreadCount}</span>
               )}
             </div>
-            <span>{user.email}</span>
+            <span>{user.user_metadata.full_name || "Utilisateur"}</span>
             <div className="user-avatar">
               {user.email?.charAt(0).toUpperCase()}
             </div>

@@ -80,8 +80,8 @@ const Profile = () => {
                   <p>{user?.email}</p>
                 </div>
                 <div className="info-item">
-                  <label>ID Utilisateur</label>
-                  <p>{user?.id}</p>
+                  <label>Nom d'utilisateur</label>
+                  <p>{user?.user_metadata.full_name}</p>
                 </div>
                 <div className="info-item">
                   <label>Date d'inscription</label>
