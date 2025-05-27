@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabase";
 import "./DepotDashboard.css";
 
+
 const DepotDashboard = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ const DepotDashboard = () => {
     deliveredParcels: 0,
   });
   const [dataLoading, setDataLoading] = useState(true);
+
+  const [isScanning,setIsScanning] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
@@ -60,6 +63,13 @@ const DepotDashboard = () => {
       console.error("Erreur lors de la déconnexion:", error.message);
     }
   };
+
+  
+
+
+
+
+
 
   if (loading || dataLoading) {
     return (
