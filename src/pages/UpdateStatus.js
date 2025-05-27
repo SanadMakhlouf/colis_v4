@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabase";
 import "./UpdateStatus.css";
+import { Html5QrcodeScanner } from "html5-qrcode";
 
 const UpdateStatus = () => {
   const { user } = useAuth();
   const [trackingNumber, setTrackingNumber] = useState("");
   const [selectedShipment, setSelectedShipment] = useState(null);
   const [message, setMessage] = useState({ type: "", text: "" });
+  const [isScanning, setIsScanning] = useState(false);
 
   const handleTrackingSearch = async (e) => {
     e.preventDefault();
@@ -65,6 +67,89 @@ const UpdateStatus = () => {
           "Une erreur est survenue lors de la recherche du colis."
         }`,
       });
+    }
+  };
+
+  useEffect(() => {
+    let scanner = null;
+    if (isScanning) {
+      scanner = new Html5QrcodeScanner("reader", {
+        qrbox: {
+          width: 250,
+          height: 250,
+        },
+        fps: 5,
+      });
+
+      scanner.render(onScanSuccess, onScanError);
+    }
+
+    return () => {
+      if (scanner) {
+        scanner.clear().catch(console.error);
+      }
+    };
+  }, [isScanning]);
+
+  const onScanSuccess = async (decodedText) => {
+    setIsScanning(false);
+    setTrackingNumber(decodedText);
+    // Créer une fonction séparée pour la recherche sans event
+    try {
+      console.log("Recherche du colis avec le numéro:", decodedText.trim());
+
+      const { data: shipment, error } = await supabase
+        .from("shipments")
+        .select("*")
+        .eq("tracking_number", decodedText.trim())
+        .single();
+
+      if (error) {
+        console.error("Erreur lors de la recherche:", error);
+        setMessage({
+          type: "error",
+          text: "Aucun colis trouvé avec ce numéro de suivi.",
+        });
+        return;
+      }
+
+      if (!shipment) {
+        setMessage({
+          type: "error",
+          text: "Aucun colis trouvé avec ce numéro de suivi.",
+        });
+        return;
+      }
+
+      console.log("Colis trouvé:", shipment);
+
+      setSelectedShipment(shipment);
+      setMessage({
+        type: "success",
+        text: `Colis #${shipment.tracking_number} trouvé avec succès.`,
+      });
+      setTrackingNumber("");
+    } catch (error) {
+      console.error("Erreur détaillée:", error);
+      setMessage({
+        type: "error",
+        text: `Erreur: ${
+          error.message ||
+          "Une erreur est survenue lors de la recherche du colis."
+        }`,
+      });
+    }
+  };
+
+  const onScanError = (error) => {
+    console.warn(error);
+  };
+
+  const toggleScanner = () => {
+    setIsScanning(!isScanning);
+    if (!isScanning) {
+      setSelectedShipment(null);
+      setMessage({ type: "", text: "" });
     }
   };
 
@@ -189,6 +274,18 @@ const UpdateStatus = () => {
               Rechercher
             </button>
           </form>
+          <button
+            onClick={toggleScanner}
+            className={`btn ${isScanning ? "btn-danger" : "btn-secondary"}`}
+          >
+            {isScanning ? "Arrêter le scan" : "Scanner QR Code"}
+          </button>
+
+          {isScanning && (
+            <div className="scanner-container">
+              <div id="reader"></div>
+            </div>
+          )}
 
           {message.text && (
             <div className={`message ${message.type}`}>{message.text}</div>
@@ -202,12 +299,9 @@ const UpdateStatus = () => {
                   <strong>Statut actuel:</strong>{" "}
                   {getStatusText(selectedShipment.status)}
                 </p>
+
                 <p>
-                  <strong>Origine:</strong> {selectedShipment.origin_address}
-                </p>
-                <p>
-                  <strong>Destination:</strong>{" "}
-                  {selectedShipment.destination_address}
+                  <strong>Destination:</strong> {selectedShipment.destination}
                 </p>
                 <p>
                   <strong>Date de création:</strong>{" "}

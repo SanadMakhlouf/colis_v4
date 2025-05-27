@@ -6,6 +6,10 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 import Sidebar from "../components/Sidebar";
 import "./LivreurDashboard.css";
 
+/**
+ * Composant principal du tableau de bord du livreur
+ * Gère l'affichage et la logique des colis à livrer
+ */
 const LivreurDashboard = () => {
   const { user, loading } = useAuth();
   const [dataLoading, setDataLoading] = useState(true);
@@ -20,12 +24,18 @@ const LivreurDashboard = () => {
   const [message, setMessage] = useState({ type: "", text: "" });
   const [isScanning, setIsScanning] = useState(false);
 
+  /**
+   * Effet qui déclenche le chargement des données lorsque l'utilisateur est authentifié
+   */
   useEffect(() => {
     if (!loading && user) {
       fetchData();
     }
   }, [user, loading]);
 
+  /**
+   * Effet qui gère l'initialisation et le nettoyage du scanner QR code
+   */
   useEffect(() => {
     let scanner = null;
     if (isScanning) {
@@ -47,16 +57,27 @@ const LivreurDashboard = () => {
     };
   }, [isScanning]);
 
+  /**
+   * Callback appelé lors d'un scan QR code réussi
+   * @param {string} decodedText - Le texte décodé du QR code
+   */
   const onScanSuccess = async (decodedText) => {
     setIsScanning(false);
     setTrackingNumber(decodedText);
     await searchShipment(decodedText);
   };
 
+  /**
+   * Callback appelé en cas d'erreur lors du scan QR code
+   * @param {Error} error - L'erreur survenue
+   */
   const onScanError = (error) => {
     console.warn(error);
   };
 
+  /**
+   * Bascule l'état du scanner QR code (actif/inactif)
+   */
   const toggleScanner = () => {
     setIsScanning(!isScanning);
     if (!isScanning) {
@@ -65,6 +86,10 @@ const LivreurDashboard = () => {
     }
   };
 
+  /**
+   * Recherche un colis par son numéro de suivi
+   * @param {string} tracking - Le numéro de suivi à rechercher
+   */
   const searchShipment = async (tracking) => {
     try {
       console.log("Recherche du colis avec le numéro:", tracking.trim());
@@ -112,6 +137,10 @@ const LivreurDashboard = () => {
     }
   };
 
+  /**
+   * Gère la soumission du formulaire de recherche de colis
+   * @param {Event} e - L'événement de soumission du formulaire
+   */
   const handleTrackingSearch = async (e) => {
     e.preventDefault();
     setMessage({ type: "", text: "" });
@@ -128,6 +157,10 @@ const LivreurDashboard = () => {
     await searchShipment(trackingNumber);
   };
 
+  /**
+   * Récupère toutes les données nécessaires pour le tableau de bord
+   * (colis, statistiques, etc.)
+   */
   const fetchData = async () => {
     try {
       setDataLoading(true);
@@ -165,6 +198,10 @@ const LivreurDashboard = () => {
     }
   };
 
+  /**
+   * Met à jour le statut d'un colis et crée une notification
+   * @param {string} newStatus - Le nouveau statut à appliquer
+   */
   const handleStatusChange = async (newStatus) => {
     try {
       if (!selectedShipment || !selectedShipment.id) {
@@ -234,7 +271,11 @@ const LivreurDashboard = () => {
     }
   };
 
-  // Fonction pour formater la date
+  /**
+   * Formate une date en chaîne de caractères lisible
+   * @param {string} dateString - La date à formater
+   * @returns {string} La date formatée
+   */
   const formatDate = (dateString) => {
     if (!dateString) return "Non définie";
     return new Date(dateString).toLocaleString("fr-FR", {
@@ -246,7 +287,11 @@ const LivreurDashboard = () => {
     });
   };
 
-  // Fonction pour obtenir le texte du statut en français
+  /**
+   * Convertit un code de statut en texte français
+   * @param {string} status - Le code du statut
+   * @returns {string} Le texte du statut en français
+   */
   const getStatusText = (status) => {
     switch (status) {
       case "processing":

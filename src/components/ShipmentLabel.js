@@ -99,10 +99,6 @@ const ShipmentLabel = ({ shipment }) => {
             </Text>
           </View>
 
-          <View style={styles.row}>
-            <Text style={styles.label}>Statut:</Text>
-            <Text style={styles.value}>{shipment.status}</Text>
-          </View>
 
           <View style={styles.row}>
             <Text style={styles.label}>Origine:</Text>
@@ -113,6 +109,8 @@ const ShipmentLabel = ({ shipment }) => {
             <Text style={styles.label}>Destination:</Text>
             <Text style={styles.value}>{shipment.destination}</Text>
           </View>
+
+          
 
           <View style={styles.row}>
             <Text style={styles.label}>Poids:</Text>
