@@ -5,13 +5,15 @@
   align-items: center;
   background-color: #f9f9f9;
   padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .tracking-container {
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 600px;
 }
@@ -31,6 +33,7 @@
   color: #666;
   font-size: 1.1rem;
   margin: 0 0 2rem;
+  text-align: center;
 }
 
 .tracking-form {
@@ -40,20 +43,15 @@
 .form-group {
   display: flex;
   gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .tracking-input {
   flex: 1;
-  padding: 0.75rem 1rem;
-  border: 2px solid #eee;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  transition: border-color 0.3s;
-}
-
-.tracking-input:focus {
-  outline: none;
-  border-color: #ff7a30;
 }
 
 .tracking-button {
@@ -62,15 +60,13 @@
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
-  white-space: nowrap;
+  font-weight: 500;
+  transition: background-color 0.2s;
 }
 
 .tracking-button:hover {
-  background-color: #e66a20;
+  background-color: #ff6b1c;
 }
 
 .tracking-button:disabled {
@@ -106,23 +102,23 @@
 }
 
 .status-processing {
-  background-color: #e3f2fd;
-  color: #1976d2;
+  background-color: #fef3c7;
+  color: #92400e;
 }
 
 .status-in-transit {
-  background-color: #fff3e0;
-  color: #f57c00;
+  background-color: #dbeafe;
+  color: #1e40af;
 }
 
 .status-delivered {
-  background-color: #e8f5e9;
-  color: #2e7d32;
+  background-color: #dcfce7;
+  color: #166534;
 }
 
 .status-cancelled {
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: #fee2e2;
+  color: #991b1b;
 }
 
 .detail-grid {
@@ -132,29 +128,32 @@
 }
 
 .detail-item {
-  padding: 1rem;
-  background-color: white;
-  border-radius: 4px;
-  border: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
 }
 
 .detail-label {
+  font-weight: 500;
   color: #666;
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
 }
 
 .detail-value {
   color: #333;
-  font-weight: 500;
 }
 
 .error-message {
-  background-color: #ffebee;
-  color: #c62828;
+  color: #dc2626;
+  background-color: #fee2e2;
   padding: 1rem;
   border-radius: 4px;
-  margin-top: 1rem;
+  margin-bottom: 1rem;
   text-align: center;
 }
 
@@ -169,8 +168,35 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.login-prompt {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 4px;
+}
+
+.login-prompt p {
+  color: #64748b;
+  margin: 0;
+}
+
+.login-prompt a {
+  color: #ff7a30;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-prompt a:hover {
+  text-decoration: underline;
 }
 
 /* Responsive Design */
@@ -223,4 +249,22 @@
   .tracking-input {
     font-size: 16px; /* Prevents zoom on mobile */
   }
-} 
+}
+
+@media (max-width: 640px) {
+  .tracking-page {
+    padding: 1rem;
+  }
+
+  .tracking-container {
+    padding: 1rem;
+  }
+
+  .form-group {
+    flex-direction: column;
+  }
+
+  .tracking-button {
+    width: 100%;
+  }
+}

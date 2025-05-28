@@ -65,8 +65,8 @@ const Landing = () => {
                   <Link to="/register" className="btn btn-primary">
                     Commencer
                   </Link>
-                  <Link to="/demo" className="btn btn-secondary">
-                    Voir la Démo
+                  <Link to="/tracking" className="btn btn-secondary">
+                    Suivre un colis
                   </Link>
                 </>
               )}

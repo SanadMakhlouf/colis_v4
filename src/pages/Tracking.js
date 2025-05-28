@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { supabase } from '../supabase';
-import Modal from '../components/Modal';
-import './Tracking.css';
+import React, { useState } from "react";
+import { supabase } from "../supabase";
+import Modal from "../components/Modal";
+import "./Tracking.css";
 
 const Tracking = () => {
-  const [trackingNumber, setTrackingNumber] = useState('');
+  const [trackingNumber, setTrackingNumber] = useState("");
   const [shipment, setShipment] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -18,9 +18,9 @@ const Tracking = () => {
 
     try {
       const { data, error } = await supabase
-        .from('shipments')
-        .select('*')
-        .eq('tracking_number', trackingNumber.toUpperCase())
+        .from("shipments")
+        .select("*")
+        .eq("tracking_number", trackingNumber.toUpperCase())
         .single();
 
       if (error) throw error;
@@ -29,11 +29,11 @@ const Tracking = () => {
         setShipment(data);
         setIsModalOpen(true);
       } else {
-        setError('Aucun colis trouvé avec ce numéro de suivi.');
+        setError("Aucun colis trouvé avec ce numéro de suivi.");
       }
     } catch (error) {
-      console.error('Erreur lors de la recherche:', error);
-      setError('Une erreur est survenue lors de la recherche du colis.');
+      console.error("Erreur lors de la recherche:", error);
+      setError("Une erreur est survenue lors de la recherche du colis.");
     } finally {
       setLoading(false);
     }
@@ -41,26 +41,26 @@ const Tracking = () => {
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
-      case 'processing':
-        return 'status-processing';
-      case 'in_transit':
-        return 'status-in-transit';
-      case 'delivered':
-        return 'status-delivered';
-      case 'cancelled':
-        return 'status-cancelled';
+      case "processing":
+        return "status-processing";
+      case "in_transit":
+        return "status-in-transit";
+      case "delivered":
+        return "status-delivered";
+      case "cancelled":
+        return "status-cancelled";
       default:
-        return '';
+        return "";
     }
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("fr-FR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -69,7 +69,8 @@ const Tracking = () => {
       <div className="tracking-container">
         <h1>Suivi de Colis</h1>
         <p className="tracking-description">
-          Entrez le numéro de suivi de votre colis pour voir son statut et ses détails.
+          Entrez le numéro de suivi de votre colis pour voir son statut et ses
+          détails.
         </p>
 
         <form onSubmit={handleSearch} className="tracking-form">
@@ -82,31 +83,31 @@ const Tracking = () => {
               className="tracking-input"
               required
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="tracking-button"
               disabled={loading}
             >
-              {loading ? 'Recherche...' : 'Rechercher'}
+              {loading ? "Recherche..." : "Rechercher"}
             </button>
           </div>
         </form>
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
+        {error && <div className="error-message">{error}</div>}
 
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
           {shipment && (
             <div className="shipment-details">
               <h3>Détails du Colis #{shipment.tracking_number}</h3>
-              
+
               <div className="detail-item">
                 <div className="detail-label">Statut</div>
                 <div className="detail-value">
-                  <span className={`status-badge ${getStatusBadgeClass(shipment.status)}`}>
+                  <span
+                    className={`status-badge ${getStatusBadgeClass(
+                      shipment.status
+                    )}`}
+                  >
                     {shipment.status}
                   </span>
                 </div>
@@ -134,13 +135,17 @@ const Tracking = () => {
 
               <div className="detail-item">
                 <div className="detail-label">Date de création</div>
-                <div className="detail-value">{formatDate(shipment.created_at)}</div>
+                <div className="detail-value">
+                  {formatDate(shipment.created_at)}
+                </div>
               </div>
 
               <div className="detail-item">
                 <div className="detail-label">Livraison estimée</div>
                 <div className="detail-value">
-                  {shipment.estimated_delivery ? formatDate(shipment.estimated_delivery) : 'Non définie'}
+                  {shipment.estimated_delivery
+                    ? formatDate(shipment.estimated_delivery)
+                    : "Non définie"}
                 </div>
               </div>
             </div>
@@ -151,4 +156,4 @@ const Tracking = () => {
   );
 };
 
-export default Tracking; 
+export default Tracking;

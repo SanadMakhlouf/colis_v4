@@ -30,7 +30,6 @@ const Reservation = () => {
     receiver_address: "",
   });
 
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabase";
 import "./DepotDashboard.css";
-
+import StatusBadge from "../components/StatusBadge";
 
 const DepotDashboard = () => {
   const { user, loading } = useAuth();
@@ -12,14 +12,19 @@ const DepotDashboard = () => {
     totalParcels: 0,
     assignedParcels: 0,
     deliveredParcels: 0,
+    processingParcels: 0,
+    inTransitParcels: 0,
+    receivedParcels: 0,
   });
+  const [recentParcels, setRecentParcels] = useState([]);
   const [dataLoading, setDataLoading] = useState(true);
 
-  const [isScanning,setIsScanning] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
       fetchStats();
+      fetchRecentParcels();
     }
   }, [user, loading]);
 
@@ -27,30 +32,43 @@ const DepotDashboard = () => {
     try {
       setDataLoading(true);
 
-      // Récupérer les statistiques des colis
       const { data: parcels, error: parcelsError } = await supabase
         .from("shipments")
         .select("status");
 
       if (parcelsError) throw parcelsError;
 
-      const totalParcels = parcels.length;
-      const assignedParcels = parcels.filter(
-        (p) => p.status === "assigne"
-      ).length;
-      const deliveredParcels = parcels.filter(
-        (p) => p.status === "livre"
-      ).length;
+      const stats = {
+        totalParcels: parcels.length,
+        assignedParcels: parcels.filter((p) => p.status === "assigne").length,
+        deliveredParcels: parcels.filter((p) => p.status === "livre").length,
+        processingParcels: parcels.filter((p) => p.status === "processing")
+          .length,
+        inTransitParcels: parcels.filter((p) => p.status === "en_cours").length,
+        receivedParcels: parcels.filter((p) => p.status === "recu").length,
+      };
 
-      setStats({
-        totalParcels,
-        assignedParcels,
-        deliveredParcels,
-      });
+      setStats(stats);
     } catch (error) {
       console.error("Erreur lors du chargement des statistiques:", error);
     } finally {
       setDataLoading(false);
+    }
+  };
+
+  const fetchRecentParcels = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("shipments")
+        .select("*")
+        .eq("status", "recu") // Filtrer uniquement les colis avec le statut "recu"
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+      setRecentParcels(data);
+    } catch (error) {
+      console.error("Erreur lors du chargement des colis récents:", error);
     }
   };
 
@@ -64,12 +82,15 @@ const DepotDashboard = () => {
     }
   };
 
-  
-
-
-
-
-
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   if (loading || dataLoading) {
     return (
@@ -81,6 +102,21 @@ const DepotDashboard = () => {
       </div>
     );
   }
+
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case "processing":
+        return "En traitement";
+      case "assigne":
+        return "Assigné";
+      case "livre":
+        return "Livré";
+      case "en_cours":
+        return "En cours";
+      default:
+        return status;
+    }
+  };
 
   return (
     <div className="depot-dashboard">
@@ -122,7 +158,7 @@ const DepotDashboard = () => {
 
         <div className="dashboard-card stats">
           <div className="card-icon">
-            <i className="fas fa-chart-bar"></i>
+            <i className="fas fa-chart-pie"></i>
           </div>
           <h3>Statistiques</h3>
           <div className="stats-grid">
@@ -131,13 +167,59 @@ const DepotDashboard = () => {
               <span className="stat-label">Total Colis</span>
             </div>
             <div className="stat-item">
-              <span className="stat-value">{stats.assignedParcels}</span>
-              <span className="stat-label">Assignés</span>
+              <span className="stat-value">{stats.receivedParcels}</span>
+              <span className="stat-label">Reçus</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-value">{stats.processingParcels}</span>
+              <span className="stat-label">En traitement</span>
+            </div>
+
+            <div className="stat-item">
+              <span className="stat-value">{stats.inTransitParcels}</span>
+              <span className="stat-label">En cours</span>
             </div>
             <div className="stat-item">
               <span className="stat-value">{stats.deliveredParcels}</span>
               <span className="stat-label">Livrés</span>
             </div>
+          </div>
+        </div>
+
+        <div className="recent-parcels-section">
+          <h2>Colis Reçus Récemment</h2>
+          <div className="parcels-list">
+            {recentParcels.map((parcel) => (
+              <div key={parcel.id} className="parcel-card">
+                <div className="parcel-header">
+                  <span className="tracking-number">
+                    {parcel.tracking_number}
+                  </span>
+                  <StatusBadge status="Reçu" withIcon={true} />
+                </div>
+                <div className="parcel-details">
+                  <div className="detail-row">
+                    <i className="fas fa-user"></i>
+                    <span>Destinataire :{parcel.receiver_name}</span>
+                  </div>
+                  <div className="detail-row">
+                    <i className="fas fa-map-marker-alt"></i>
+                    <span>Distination : {parcel.destination}</span>
+                  </div>
+                  <div className="detail-row">
+                    <i className="fas fa-calendar-alt"></i>
+                    <span> {formatDate(parcel.created_at)}</span>
+                  </div>
+                </div>
+                
+              </div>
+            ))}
+            {recentParcels.length === 0 && (
+              <div className="no-parcels-message">
+                <i className="fas fa-inbox"></i>
+                <p>Aucun colis reçu pour le moment</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

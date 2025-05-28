@@ -583,3 +583,199 @@
     background-position: 1rem 0;
   }
 }
+
+.form-group .iti {
+  width: 100%;
+}
+
+.form-group .iti__flag-container {
+  z-index: 2;
+}
+
+.form-group input[type="tel"] {
+  padding-left: 52px !important;
+}
+
+/* Ensure dropdown is visible */
+.iti__country-list {
+  z-index: 999;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.iti__country {
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.iti__country:hover {
+  background-color: #f5f5f5;
+}
+
+/* Style for the selected flag button */
+.iti__selected-flag {
+  padding: 0 8px;
+  border-right: 1px solid #ccc;
+  background-color: #f9f9f9;
+}
+
+.intl-tel-input {
+  width: 100% !important;
+}
+
+.intl-tel-input .form-control {
+  width: 100% !important;
+  height: 48px;
+  padding: 12px 16px 12px 52px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #333;
+  background-color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.intl-tel-input .form-control:focus {
+  border-color: #ff7a30;
+  box-shadow: 0 0 0 3px rgba(255, 122, 48, 0.1);
+  outline: none;
+}
+
+.intl-tel-input .flag-container {
+  padding: 0 12px;
+}
+
+.intl-tel-input .selected-flag {
+  width: 50px;
+  padding: 0 8px 0 8px;
+  border-radius: 6px 0 0 6px;
+}
+
+.intl-tel-input .country-list {
+  max-height: 200px;
+  width: 300px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.intl-tel-input .country-list .country {
+  padding: 8px 12px;
+}
+
+.intl-tel-input .country-list .country:hover {
+  background-color: #fff5f0;
+}
+
+.intl-tel-input .country-list .flag {
+  margin-right: 8px;
+}
+
+.intl-tel-input .country-list .country-name {
+  color: #333;
+  font-size: 14px;
+}
+
+.intl-tel-input .country-list .dial-code {
+  color: #666;
+  font-size: 13px;
+}
+
+.phone-input-container {
+  width: 100% !important;
+}
+
+.phone-input {
+  width: 100% !important;
+  height: 48px !important;
+  padding: 12px 16px 12px 52px !important;
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 8px !important;
+  font-size: 16px !important;
+  color: #333 !important;
+  background-color: #ffffff !important;
+  transition: all 0.3s ease !important;
+}
+
+.phone-input:focus {
+  border-color: #ff7a30 !important;
+  box-shadow: 0 0 0 3px rgba(255, 122, 48, 0.1) !important;
+  outline: none !important;
+}
+
+.phone-input-button {
+  border: none !important;
+  border-right: 2px solid #e0e0e0 !important;
+  padding: 0 12px !important;
+  background-color: #f9f9f9 !important;
+  border-radius: 6px 0 0 6px !important;
+}
+
+.phone-input-dropdown {
+  max-height: 300px !important;
+  width: 300px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e0e0e0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  background-color: white !important;
+}
+
+.phone-input-dropdown .country {
+  padding: 8px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.phone-input-dropdown .country:hover {
+  background-color: #fff5f0 !important;
+}
+
+.phone-input-dropdown .country .flag {
+  margin-right: 8px !important;
+}
+
+.phone-input-dropdown .country-name {
+  color: #333 !important;
+  font-size: 14px !important;
+}
+
+.phone-input-dropdown .dial-code {
+  color: #666 !important;
+  font-size: 13px !important;
+  margin-left: 8px !important;
+}
+
+.phone-input-dropdown .search-box {
+  padding: 10px !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.phone-input-dropdown .search-box input {
+  width: 100% !important;
+  padding: 8px 12px !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 4px !important;
+  font-size: 14px !important;
+}
+
+.phone-input-dropdown .no-result-found {
+  padding: 12px !important;
+  text-align: center !important;
+  color: #666 !important;
+  font-size: 14px !important;
+}
+
+/* Suppression des styles liés au téléphone */
+.form-group .iti,
+.phone-input-container,
+.phone-input,
+.phone-input-button,
+.phone-input-dropdown {
+  /* Suppression des styles */
+}

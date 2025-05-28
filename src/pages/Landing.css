@@ -1,7 +1,7 @@
 /* Global styles for landing page */
 .landing-page {
   min-height: 100vh;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-family: "Inter", "Segoe UI", sans-serif;
   background-color: #f8f9fa;
   color: #0a1921;
 }
@@ -225,6 +225,13 @@
 
 .hero-image:hover img {
   transform: scale(1.05);
+}
+
+/* Remove video-related styles */
+.video-background,
+.background-video,
+.video-overlay {
+  display: none;
 }
 
 /* Services Section */
@@ -524,4 +531,4 @@
   .hero-image {
     max-width: 100%;
   }
-} 
+}

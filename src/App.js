@@ -126,9 +126,9 @@ function App() {
           <Route
             path="/tracking"
             element={
-              <ProtectedRoute>
+              <PublicRoute>
                 <Tracking />
-              </ProtectedRoute>
+              </PublicRoute>
             }
           />
 
